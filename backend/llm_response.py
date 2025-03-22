@@ -1,0 +1,1 @@
+from utils.firebase import db

@@ -1,19 +1,14 @@
-"use client"; 
-import Calendar from "@/components/calendar";
-import Navbar from "@/components/navbar";
-import React, { useState } from "react";
-import { SelectedPage } from "@/utils/types";
+import type { NextPage } from "next";
 
-
-export default function page() {
-  const [selectedPage, setSelectedPage] = useState<SelectedPage>(SelectedPage.about);
+const Home: NextPage = () => {
   return (
     <>
-    <Navbar isTopOfPage={true} selectedPage={selectedPage} setSelectedPage={setSelectedPage} />
-      <div className = "w-150 h-150 ml-20 mt-50">
-      <Calendar />
-      </div>
+    <main className="p-4">
+      <h1 className="text-2xl font-bold mb-4">thought mirror</h1>
+      <p>home page</p>
+    </main>
     </>
-    
   );
-}
+};
+
+export default Home;

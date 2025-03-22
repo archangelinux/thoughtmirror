@@ -1,5 +1,6 @@
 "use client";
 
+// import { Container, Box, Title } from "./index.styles";
 import React, { useEffect, useState } from "react";
 import { signInWithGoogle } from "@/app/firebase/authService";
 import { useRouter } from "next/navigation";
@@ -73,16 +74,39 @@ const SignUp: React.FC = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="text-center">
-        <h2 className="text-2xl mb-6">Sign Up With Google</h2>
+<div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="text-center bg-white p-14 pb-2 pt-10 rounded-2xl shadow-lg max-w-96 w-full flex flex-col justify-start">
+        <h2 className="text-2xl font-bold mb-4">Start journaling today!</h2>
+
+        <img
+          src="/blue_squiggle.png"
+          className="mx-auto mb-3 w-44 h-4"  // Centers the image and adds margin below it
+        />
+
+        <h2 className="text-lg mb-12">Login or sign up to start your first journal entry:</h2>
+
         <button
           onClick={handleGoogleSignIn}
-          className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+          className="px-6 py-2 bg-blue-400 text-white rounded-md hover:bg-blue-500 transition duration-300 mb-3 flex items-center justify-between"
         >
-          Sign Up
+          <img
+            src="/google_logo.png"
+            alt="Icon"
+            className="w-6 h-6 mr-2"
+          />
+          <span className="flex-grow text-center mr-7">Sign Up</span>
         </button>
-        <a href="/pages/signin">Sign In</a>
+
+        <a
+          className="text-sm py-0 hover:text-gray-500 transition duration-300"
+          href="/pages/signin"
+        >
+          or Sign In
+        </a>
+        <div className="h-14"></div>
+        <p className="text-sm mt-2 pt-0 hover:text-gray-500 hover:underline transition duration-300 cursor-pointer">
+          Forgot password?
+        </p>
       </div>
     </div>
   );

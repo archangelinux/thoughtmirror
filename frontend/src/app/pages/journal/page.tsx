@@ -241,10 +241,14 @@ export default function Journal() {
                                         />
                                     </svg>
                                 </h1>
+                                <div className = "flex flex-row gap-5">
                                 <button className="w-18 h-18 rounded-full bg-transparent border-1 border-blue-400 flex items-center justify-center text-white hover:bg-blue-500 transition-colors flex-shrink-0">
-                                    <Image src="/hand_mirror.svg" alt="Logo" width={60} height={60} priority />
-                                    
+                                    <Image src="/hand_mirror.svg" alt="Logo" width={60} height={60} priority />   
                                 </button>
+                                <button className="w-18 h-18 rounded-full bg-blue-400 border-1 border-blue-400 flex items-center justify-center text-white hover:bg-blue-500 transition-colors flex-shrink-0">
+                                    save
+                                </button>
+                                </div>
                             </div>
                         )}
                         <div className="flex flex-col mb-6 text-gray-600">

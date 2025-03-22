@@ -7,10 +7,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, parseISO } from "date-fns";
 import { useRouter } from 'next/navigation';
-
-interface Ratings {
-  [key: string]: "string";
-}
+import DistortionWidget from '@/app/components/distortionwidget';
 
 interface JournalEntry {
   id: string;
@@ -23,40 +20,15 @@ interface JournalEntry {
 const Calendar: React.FC = () => {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [ratings, setRatings] = useState<Ratings>({});
   const [entries, setEntries] = useState<JournalEntry[]>([]);
 
-  // Load and persist ratings in local storage
+  //local storage
   useEffect(() => {
-    const savedRatings = localStorage.getItem("calendarRatings");
-    if (savedRatings) {
-      setRatings(JSON.parse(savedRatings));
-    }
-
-    // Load journal entries from localStorage
     const savedEntries = localStorage.getItem("journalEntries");
     if (savedEntries) {
       setEntries(JSON.parse(savedEntries));
     }
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem("calendarRatings", JSON.stringify(ratings));
-  }, [ratings]);
-
-  // Helper functions for chart data
-  const getDaysInMonth = (): Date[] => {
-    const start = startOfMonth(currentDate);
-    const end = endOfMonth(currentDate);
-    return eachDayOfInterval({ start, end });
-  };
-
-  const getChartData = () => {
-    return getDaysInMonth().map((date) => ({
-      date: format(date, "dd"),
-      rating: ratings[format(date, "yyyy-MM-dd")] || 0,
-    }));
-  };
 
   // Find entries for a specific date
   const findEntriesForDate = (date: Date): JournalEntry[] => {
@@ -66,7 +38,6 @@ const Calendar: React.FC = () => {
     });
   };
 
-  // Get the most recent entry for a date
   const getMostRecentEntryForDate = (date: Date): JournalEntry | null => {
     const dateEntries = findEntriesForDate(date);
     if (dateEntries.length === 0) return null;
@@ -76,7 +47,6 @@ const Calendar: React.FC = () => {
     )[0];
   };
 
-  // Handle day click
   const handleDateClick = (info: any) => {
     const clickedDate = info.date;
     const entry = getMostRecentEntryForDate(clickedDate);
@@ -87,19 +57,35 @@ const Calendar: React.FC = () => {
     }
   };
 
-  // Custom render for each day cell
+  //custome rendering of cells
   const renderDayCell = (info: any) => {
-    const dayNumber = format(info.date, "d"); // Get the day of the month
+    const dayNumber = format(info.date, "d");
     const hasEntries = findEntriesForDate(info.date).length > 0;
-
+  
     return (
-      <div className="relative h-full w-full">
+      <div className="relative h-full w-full flex flex-col justify-between">
+        {/* Day Number in the top-right */}
         <div className="absolute top-1 right-2 text-sm text-gray-700">{dayNumber}</div>
+  
+        {/* DistortionWidget positioned at the bottom without affecting layout */}
         {hasEntries && (
-          <>
-            <button className="absolute top-11 right-0.5 w-15 h-1.5 bg-purple-200 rounded-full" title="moody"></button>
-            <div className="absolute top-0.5 right-0.5 w-1 h-1 z-[-10] bg-blue-300 rounded-full" title="Has journal entries"></div>
-          </>)}
+          <div className="absolute top-[-30px] right-2 ">
+              <DistortionWidget
+                distortionTraits={[
+                  { name: "Personalization", active: true },
+                  { name: "Labeling", active: true },
+                  { name: "Fortune-Telling", active: true },
+                  { name: "Magnification", active: true },
+                  { name: "Mind Reading", active: true },
+                  { name: "All-Or-Nothing Thinking", active: true },
+                  { name: "Overgeneralization", active: true },
+                  { name: "Mental Filter", active: true },
+                  { name: "Emotional Reasoning", active: true },
+                  { name: "Should Statements", active: true }
+                ]}
+              />
+            </div>
+        )}
       </div>
     );
   };

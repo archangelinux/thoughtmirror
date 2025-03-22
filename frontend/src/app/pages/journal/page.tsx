@@ -5,7 +5,44 @@ import Image from "next/image";
 import { v4 as uuidv4 } from 'uuid';
 
 export default function Journal() {
-    const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
+    const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([
+        {
+            id: "1",
+            title: "First Day of Spring",
+            content: "Today marks the first day of spring. The weather was absolutely beautiful - sunny and warm. I spent most of the afternoon walking through the park and noticed the cherry blossoms are starting to bloom. Feeling refreshed and optimistic about the season ahead.",
+            createdAt: "2025-03-20T14:32:15Z",
+            updatedAt: "2025-03-20T14:32:15Z"
+          },
+          {
+            id: "2",
+            title: "New Project Ideas",
+            content: "Brainstormed some interesting new project ideas today. I'm especially excited about building a personal knowledge management system that integrates with my journal. Key features I want: tag-based organization, full-text search, and automated insights based on mood patterns. Need to start sketching out the architecture tomorrow.",
+            createdAt: "2025-03-18T20:15:43Z",
+            updatedAt: "2025-03-19T08:22:10Z"
+          },
+          {
+            id: "3",
+            title: "Reflection on Goals",
+            content: "Quarterly review of my personal goals. Progress on fitness has been good - consistently hitting the gym 3x weekly. Career development is on track with the new certification almost complete. Need to focus more on reading as I've fallen behind my book goal. Overall feeling positive about progress but need to maintain momentum.",
+            createdAt: "2025-03-15T22:05:33Z",
+            updatedAt: "2025-03-15T22:30:45Z"
+          },
+          {
+            id: "4",
+            title: "Weekend Hiking Trip",
+            content: "Just returned from an amazing weekend hiking trip in the mountains. The trail was challenging but the views at the summit were absolutely worth it. Managed to take some great photos of the valley below. Feeling physically tired but mentally recharged. Need to plan more outdoor adventures like this soon.",
+            createdAt: "2025-03-10T19:12:06Z",
+            updatedAt: "2025-03-10T19:12:06Z"
+          },
+          {
+            id: "5",
+            title: "Learning TypeScript",
+            content: "Spent the day diving deeper into TypeScript. Getting more comfortable with interfaces, generics, and utility types. Built a small project to practice these concepts. Still struggling a bit with some of the more advanced type manipulations, but making steady progress. Need to review the documentation on conditional types again tomorrow.",
+            createdAt: "2025-03-05T16:40:22Z",
+            updatedAt: "2025-03-06T10:15:37Z"
+          }
+
+    ]);
     const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
     const [newEntryTitle, setNewEntryTitle] = useState("");
     const [isEditingTitle, setIsEditingTitle] = useState(false);

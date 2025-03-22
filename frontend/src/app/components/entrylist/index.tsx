@@ -1,5 +1,5 @@
-// components/JournalEntryList.tsx
-import React, { useState } from 'react';
+"use client";
+import React, { useState, useEffect } from 'react';
 import JournalEntryButton from '@/app/components/entrybutton';
 
 export interface JournalEntry {
@@ -14,10 +14,10 @@ interface EntryListProps {
   entries: JournalEntry[];
   onEntrySelect: (entry: JournalEntry) => void;
   onEntryDelete: (id: string) => void;
-  maxTitleLength?: number; // Optional prop with default value
+  maxTitleLength?: number;
 }
 
-// Function to truncate text with ellipsis
+//if title is too long
 const truncateTitle = (title: string, maxLength: number): string => {
   return title.length > maxLength ? `${title.substring(0, maxLength)}...` : title;
 };
@@ -32,13 +32,26 @@ const EntryList: React.FC<EntryListProps> = ({
     entries.length > 0 ? entries[0].id : null
   );
 
+  // Check for selected entry from calendar on initial load
+  useEffect(() => {
+    const selectedEntryId = localStorage.getItem("selectedEntryId");
+    if (selectedEntryId && entries.length > 0) {
+      const entryToSelect = entries.find(entry => entry.id === selectedEntryId);
+      if (entryToSelect) {
+        setSelectedEntryId(entryToSelect.id);
+        onEntrySelect(entryToSelect);
+        // Clear the stored ID after using it
+        localStorage.removeItem("selectedEntryId");
+      }
+    }
+  }, [entries, onEntrySelect]);
+
   const handleEntryClick = (entry: JournalEntry) => {
     setSelectedEntryId(entry.id);
     onEntrySelect(entry);
   };
 
-// In EntryList.tsx, modify the return statement to:
-return (
+  return (
     <div className="w-full overflow-y-auto max-h-full pr-2" style={{ minWidth: "200px" }}>
       {entries.length === 0 ? (
         <div className="text-gray-500 text-center text-[14px] p-4">

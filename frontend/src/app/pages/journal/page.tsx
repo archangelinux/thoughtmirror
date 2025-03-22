@@ -7,7 +7,6 @@ import { SelectedPage } from "@/utils/types";
 
 
 export default function Journal() {
-    const [selectedPage, setSelectedPage] = useState<SelectedPage>(SelectedPage.about);
     return (
         <>
         <div className="container mx-auto px-4 pt-50">

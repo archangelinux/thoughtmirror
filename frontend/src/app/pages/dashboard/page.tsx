@@ -6,7 +6,6 @@ import { SelectedPage } from "@/utils/types";
 
 
 export default function page() {
-  const [selectedPage, setSelectedPage] = useState<SelectedPage>(SelectedPage.about);
   return (
     <>
       <div className = "flex flex-row w-full h-full ml-20 mt-50 gap-10">

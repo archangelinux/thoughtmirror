@@ -6,7 +6,6 @@ import { SelectedPage } from "@/utils/types";
 import Image from "next/image";
 
 export default function About() {
-    const [selectedPage, setSelectedPage] = useState<SelectedPage>(SelectedPage.about);
     return (
         
         <div

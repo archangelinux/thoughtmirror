@@ -1,5 +1,6 @@
 "use client"; 
 
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,12 +9,12 @@ import { Bars3Icon } from "@heroicons/react/24/solid";
 
 import { auth } from "@/app/firebase/firebaseConfig";
 import { User } from "firebase/auth";
-import router from "next/router";
 
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {

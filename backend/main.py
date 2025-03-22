@@ -1,15 +1,30 @@
 """
 To run, type: fastapi dev backend/main.py
 """
-from fastapi import FastAPI, Query, Body, HTTPException
+from fastapi import FastAPI, Query, Body, HTTPException, Request
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
 from utils.firebase import db
 import json
 from hashing import Hasher
 from data_access import FirebaseDataAccess
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
+
 
 app = FastAPI()
+
+app.add_middleware(
+    SessionMiddleware, secret_key="your-secret-key-here"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Allow frontend to access backend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class JournalEntryPayload(BaseModel):
     title: Optional[str] = None
@@ -20,12 +35,12 @@ async def root():
     return {"message": "Hello World"}
 
 @app.post("/get_email")
-def get_user_email_from_frontend(request):
+async def get_user_email_from_frontend(request: Request):
     """
     Endpoint: /get_email
     frontend will post, we cache the email and use it as a key into the database
     """
-    body = json.loads(request.body)
+    body = await request.json()
     user_email = body.get("userEmail")
     request.session["user_email"] = user_email
     print(user_email)

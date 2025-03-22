@@ -8,7 +8,7 @@
         - google
 
 """
-
+from utils.firebase import db
 import langchain
 import base64
 import os

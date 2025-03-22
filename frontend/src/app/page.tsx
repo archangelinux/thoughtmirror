@@ -1,14 +1,14 @@
-import Calendar from "@/components/calendar";
-import RatingCal from "@/components/ratingcal/ratingCal";
+import type { NextPage } from "next";
 
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import React from "react";
-
-export default function page() {
+const Home: NextPage = () => {
   return (
-    <div className = "w-5/8 h-5/8">
-      <PageBreadcrumb pageTitle="Calendar" />
-      <Calendar />
-    </div>
+    <>
+    <main className="p-4">
+      <h1 className="text-2xl font-bold mb-4">thought mirror</h1>
+      <p>home page</p>
+    </main>
+    </>
   );
-}
+};
+
+export default Home;

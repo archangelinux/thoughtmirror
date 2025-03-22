@@ -25,5 +25,6 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Nothing You Could Do", Arial, Helvetica, sans-serif;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 22px;
 }

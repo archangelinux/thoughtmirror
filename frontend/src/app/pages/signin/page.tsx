@@ -86,7 +86,7 @@ const SignInWithGoogle: React.FC = () => {
 
         <button
           onClick={handleGoogleSignIn}
-          className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300 mb-3 flex items-center justify-between"
+          className="px-6 py-2 bg-blue-400 text-white rounded-md hover:bg-blue-500 transition duration-300 mb-3 flex items-center justify-between"
         >
           <img
             src="/google_logo.png"

@@ -10,6 +10,9 @@ from hashing import Hasher
 from data_access import FirebaseDataAccess
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+from google import genai
+from google.genai.types import HttpOptions
+import os 
 
 
 app = FastAPI()
@@ -97,3 +100,39 @@ def handle_single_entry_post( request: Request,
         return {"message": f"Deleted journal entry {post_id} for user {fda.uid}."}
     else:
         raise HTTPException(status_code=400, detail="Invalid action for POST request. Allowed actions: 'post', 'update', 'delete'.")
+
+
+def predict(journal_entry_content: str): 
+    LOCATION = "us-central1"
+    PROJECT_ID = os.getenv('FIREBASE_PROJECT_ID')
+    FINETUNED_MODEL_NAME = os.getenv('FINETUNED_MODEL_NAME')
+
+    prompt = (
+        f"Journal Entry: {journal_entry_content}\n"
+        "Analyze the text for cognitive distortions. Identify any distorted part(s) and classify them as one of: "
+        "All-or-Nothing Thinking, Overgeneralization, Mental Filter, Should Statements, Labeling, Personalization, "
+        "Magnification, Emotional Reasoning, Mind Reading, or Fortune-Telling. "
+        "Output your answer as:\n"
+        "Distorted part: <text>\nDominant Distortion: <distortion>\nSecondary Distortion (Optional): <if any>"
+    )
+
+    client = genai.Client(
+        vertexai=True,
+        project=PROJECT_ID,
+        location=LOCATION,
+        http_options=HttpOptions(api_version="v1"),
+    )
+
+    config = {
+        "temperature": 0.1,
+        "max_output_tokens": 256
+    }
+
+    response = client.models.generate_content(
+        model=FINETUNED_MODEL_NAME, 
+        contents=prompt,
+        config=config,
+    )
+
+    print("Model Response:", response.text)
+    return response.text

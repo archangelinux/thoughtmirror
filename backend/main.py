@@ -40,23 +40,27 @@ async def get_user_email_from_frontend(request: Request):
     Endpoint: /get_email
     frontend will post, we cache the email and use it as a key into the database
     """
+    hasher = Hasher()
     body = await request.json()
     user_email = body.get("userEmail")
-    request.session["user_email"] = user_email
+    request.session["user_id"] = hasher.email_to_uid(user_email)
     print(user_email)
     return {"message": f"Got user's email {user_email}", "data": user_email}
 
 @app.get("/get_all_entries")
-def get_all_entries_by_user():
-    fda = FirebaseDataAccess("users", uid="ah34r")
+def get_all_entries_by_user(request: Request):
+    user_id = request.session.get("user_id") or "0"
+    fda = FirebaseDataAccess("users", uid=user_id)
     return fda.get_journal_entries()
 
 @app.get("/get_single_entry")
-def get_single_entry(
+def get_single_entry( request: Request,
     action: str = Query(..., description="Action to perform. Use 'get' to retrieve a journal entry."),
-    post_id: str = Query(..., description="The post ID of the journal entry")
+    post_id: str = Query(..., description="The post ID of the journal entry"),
 ):
-    fda = FirebaseDataAccess("users", uid="ah34r")
+
+    user_id = request.session.get("user_id") or "0"
+    fda = FirebaseDataAccess("users", uid=user_id)
     if action.lower() == "get":
         entry = fda.get_single_entry(post_id)
         if entry is None:
@@ -66,12 +70,14 @@ def get_single_entry(
         raise HTTPException(status_code=400, detail="Invalid action for GET request. Only 'get' is allowed.")
 
 @app.post("/handle_single_entry/")
-def handle_single_entry_post(
+def handle_single_entry_post( request: Request,
     action: str = Body(..., embed=True, description="Action to perform: 'post', 'update', or 'delete'"),
     post_id: Optional[str] = Body(None, embed=True, description="The post ID for 'update' or 'delete' actions"),
     entry: Optional[JournalEntryPayload] = Body(None, embed=True, description="Journal entry data for 'post' or 'update'")
 ):
-    fda = FirebaseDataAccess("users", uid="ah34r")
+
+    user_id = request.session.get("user_id") or "0"
+    fda = FirebaseDataAccess("users", uid=user_id)
     action = action.lower()
     if action == "post":
         if entry is None or entry.title is None or entry.content is None:

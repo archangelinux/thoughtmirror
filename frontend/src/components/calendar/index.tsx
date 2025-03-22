@@ -7,15 +7,6 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-
 interface Ratings {
   [key: string]: "string";
 }
@@ -74,7 +65,7 @@ const Calendar: React.FC = () => {
           headerToolbar={{
             left: "prev next",
             center: "title",
-            right: "dayGridMonth timeGridWeek timeGridDay",
+            right: "dayGridMonth timeGridWeek",
           }}
           events={[]} 
           dayCellContent={renderDayCell} 

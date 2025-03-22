@@ -1,0 +1,77 @@
+/* Make the title larger and bold */
+.fc-toolbar-title {
+    font-size: 1.2rem !important;  /* Adjust as needed */
+    font-weight: bold !important;
+    color: #333; /* Change color if necessary */
+}
+  
+.fc-button {
+    font-size: 0.75rem !important; /* Smaller font size */
+    padding: 6px 12px !important; /* Adjust padding accordingly */
+    border-radius: 6px !important; /* Optional: rounded corners */
+}
+
+/* Adjust button size specifically for prev/next */
+.fc-prev-button,
+.fc-next-button {
+    width: 30px !important;  /* Adjust width */
+    height: 25px !important; /* Adjust height */
+    font-size: 0.65rem !important; /* Even smaller font size */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important; /* Ensures no extra space inside */
+    text-align: center !important;
+}
+
+/* Adjust button size for view selectors (month/week/day) */
+.fc-button-group .fc-button {
+    font-size: 0.75rem !important; /* Smaller font */
+    padding: 4px 10px !important; /* Adjust padding */
+}
+  .fc-toolbar-chunk {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Space between buttons */
+  }
+  
+  /* Optional: Change button background color */
+  .fc-button-primary {
+    background-color: #F0D997 !important;
+    border-color: #F0D997 !important;
+    color: black !important;
+  }
+  
+  /* Button hover effect */
+  .fc-button-primary:hover {
+    background-color: #78B3EE !important;
+  }
+  
+  .fc-button-primary:active,
+  .fc-button-primary:focus {
+      background-color: #78B3EE !important;
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
+  }
+
+  .fc-col-header-cell {
+    font-size: 0.85rem !important; /* Adjust as needed */
+    font-weight: bold !important;
+    color: #555; /* Optional: Change color */
+}
+
+.fc-timeGridWeek-view {
+    font-size: 0.5rem !important;
+}
+
+/* Even smaller font for Day view */
+.fc-timeGridDay-view {
+    font-size: 0.5rem !important;
+}
+
+.fc-timeGridWeek-view .fc-timegrid-all-day,
+.fc-timeGridDay-view .fc-timegrid-all-day {
+    display: none !important;
+}

@@ -23,7 +23,6 @@ from langchain.chains.retrieval import create_retrieval_chain
 load_dotenv()  # Load environment variables from .env file
 api_key = os.getenv("API_KEY")
 
-
 class GeminiLLM:
     """
         Uses Google's Gemini to generate LLM reponses
@@ -42,8 +41,6 @@ class GeminiLLM:
         # Read in input data as a string
         with open("output_distortions.txt", "r", encoding="utf-8") as file:
             distortion_data = file.read()
-
-
 
         llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", api_key=api_key, convert_system_message_to_human=True)
 

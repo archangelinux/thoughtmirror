@@ -23,3 +23,8 @@ def get_user_email_from_frontend(self, request):
     print(user_email)
     return {"message": f"Got user's email {user_email}", "data": user_email}
 
+def create_user_table():
+    """
+    creates empty table (collection) in firestore database for the user
+    """
+    pass

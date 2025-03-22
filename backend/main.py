@@ -50,7 +50,7 @@ def get_single_entry(
     else:
         raise HTTPException(status_code=400, detail="Invalid action for GET request. Only 'get' is allowed.")
 
-@app.post("/handle_single_entry")
+@app.post("/handle_single_entry/")
 def handle_single_entry_post(
     action: str = Body(..., embed=True, description="Action to perform: 'post', 'update', or 'delete'"),
     post_id: Optional[str] = Body(None, embed=True, description="The post ID for 'update' or 'delete' actions"),

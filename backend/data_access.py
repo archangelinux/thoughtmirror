@@ -47,6 +47,8 @@ class FirebaseDataAccess:
             "post_content": journal_entry["content"],
             "time_created": firestore.SERVER_TIMESTAMP,
             "time_last_edited": firestore.SERVER_TIMESTAMP,
+            "distortions": {},
+            "word_count": len(journal_entry["content"])
         }
 
         # Add the document to the subcollection (auto-generates a document id)
@@ -104,10 +106,15 @@ class FirebaseDataAccess:
                     "post_content": data.get("post_content"),
                     "time_created": data.get("time_created"),
                     "time_last_edited": data.get("time_last_edited"),
+                    "distortions": {},
+                    "word_count": len(data.get("post_content"))
                 }
             )
         return results
-
+    
+    def upload_journal_entries(self, user_email):
+        # users: {self.uid: [user_email, journalEntries: dict]}
+        pass
 
 if __name__ == "__main__":
     fda = FirebaseDataAccess(collection_name="users", uid="ah34r")

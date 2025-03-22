@@ -10,3 +10,5 @@ node_modules/
 .env
 
 credentials.json
+client_secret.json
+google-cloud-sdk/

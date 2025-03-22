@@ -5,7 +5,14 @@ class Hasher:
         """
         uniquely hash email to a user id
         """
-        return str(uuid.uuid5(uuid.NAMESPACE_DNS, email))
+        ids = {
+            "jennifer.r.chiou@gmail.com": 0,
+            "angelinabai.wang@gmail.com":1,
+            "armaganngul@gmail.com":2,
+            "gabrielmcfadyen@gmail.com": 3
+        }
+        
+        return ids[email] if email in ids else 4
 
     def title_to_postid(self, title: str, date):
         """

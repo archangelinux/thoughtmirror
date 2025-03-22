@@ -9,7 +9,7 @@ function SendEmail(userEmail: string) {
   const sendEmailToBackend = async (userEmail: string) => {
     try {
       const response = await fetch(
-        "localhost:8000/get_email",
+        "http://127.0.0.1:8000/get_email",
         {
           method: "POST",
           headers: {

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Nothing+You+Could+Do&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
 
@@ -25,5 +25,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Nothing You Could Do", Arial, Helvetica, sans-serif;
+  font-family: "Monserrat", Arial, Helvetica, sans-serif;
 }
+
+

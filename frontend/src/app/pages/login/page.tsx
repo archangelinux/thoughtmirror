@@ -6,13 +6,13 @@ import { SelectedPage } from "@/utils/types";
 
 
 
-export default function Journal() {
+export default function Login() {
     const [selectedPage, setSelectedPage] = useState<SelectedPage>(SelectedPage.about);
     return (
-        <>
-        <Navbar isTopOfPage={true} selectedPage={selectedPage} setSelectedPage={setSelectedPage} />
-        <div className="container mx-auto px-4 pt-50">
-            <h1 className="text-3xl font-bold">JOURNAL HERE</h1>
+      <>
+      <Navbar isTopOfPage={true} selectedPage={selectedPage} setSelectedPage={setSelectedPage} />
+        <div className = "w-150 h-150 ml-20 mt-50">
+            <h1>LOGIN/SIGNUP</h1>
         </div>
       </>
     )

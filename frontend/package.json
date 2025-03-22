@@ -14,9 +14,11 @@
     "@fullcalendar/interaction": "^6.1.15",
     "@fullcalendar/react": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
+    "@heroicons/react": "^2.2.0",
     "date-fns": "^4.1.0",
     "next": "15.2.3",
     "react": "^19.0.0",
+    "react-anchor-link-smooth-scroll": "^1.0.12",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.1"
   },

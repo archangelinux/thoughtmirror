@@ -1,14 +1,19 @@
+"use client"; 
 import Calendar from "@/components/calendar";
-import RatingCal from "@/components/ratingcal/ratingCal";
+import Navbar from "@/components/navbar";
+import React, { useState } from "react";
+import { SelectedPage } from "@/utils/types";
 
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import React from "react";
 
 export default function page() {
+  const [selectedPage, setSelectedPage] = useState<SelectedPage>(SelectedPage.about);
   return (
-    <div className = "w-5/8 h-5/8">
-      <PageBreadcrumb pageTitle="Calendar" />
+    <>
+    <Navbar isTopOfPage={true} selectedPage={selectedPage} setSelectedPage={setSelectedPage} />
+      <div className = "w-150 h-150 ml-20 mt-50">
       <Calendar />
-    </div>
+      </div>
+    </>
+    
   );
 }

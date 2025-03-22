@@ -16,8 +16,6 @@ export default function About() {
                 backgroundSize: "auto 140%",  // Ensure the image scales without stretching
                 backgroundPosition: "top center",  // Center it vertically without cropping
             }} >
-                <Navbar isTopOfPage={true} selectedPage={selectedPage} setSelectedPage={setSelectedPage} />
-
             <div className="container mx-auto px-4 bg-white bg-opacity-80 p-10 rounded-lg">
                 <h1 className="text-3xl font-bold text-center">ABOUT</h1>
             </div>

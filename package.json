@@ -2,7 +2,8 @@
   "dependencies": {
     "next": "^15.2.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "requirements": "^2.0.2"
   },
   "devDependencies": {
     "@types/react": "^19.0.12",

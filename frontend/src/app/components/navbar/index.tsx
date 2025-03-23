@@ -41,7 +41,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-30 py-6 px-6 bg-transparent">
+    <nav className="fixed top-0 left-0 right-0 z-30 py-6 px-6 bg-white">
       <div className="flex justify-between items-center w-full max-w-[98%] mx-auto">
         <Link href="/pages/homepage">
           <Image src="/thoughtmirror_logo.png" alt="Logo" width={140} height={58} priority />

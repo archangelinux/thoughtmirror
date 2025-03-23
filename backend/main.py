@@ -185,11 +185,11 @@ def generate_explanation(prediction: dict, qa_chain) -> str:
     """
     # Build the explanation prompt from the prediction.
     explanation_prompt = (
-        f"You are a cognitive behavioral therapist explaining to a patient how text they wrote demonstrates a specific cognitive distortion.\n"
+        f"You are a cognitive behavioral therapist helping a patient reflect on how text they wrote demonstrates a cognitive distortion.\n"
         f"Patient's Text: {prediction.get('Distorted part', 'N/A')}\n"
         f"Dominant Distortion: {prediction.get('Dominant Distortion', 'N/A')}\n"
         f"Secondary Distortion (Optional): {prediction.get('Secondary Distortion (Optional)', 'None')}\n\n"
-        "Provide a therapy-driven explanation in 2-3 sentences to help the patient reflect on their distortions."
+        "Write 2-3 sentences of feedback to gently help the patient reflect on their cognitive distortions."
     )
     
     # Optionally, include a note that the explanation should be informed by CBT principles.

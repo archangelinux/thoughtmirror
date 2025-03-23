@@ -79,9 +79,11 @@ const Calendar: React.FC = () => {
     const clickedDate = info.date;
     console.log(clickedDate)
     const entry = getMostRecentEntryForDate(clickedDate);
+    console.log(entry?.title)
 
     if (entry) {
       localStorage.setItem("selectedEntryId", entry.id);
+      console.log(entry.id)
       router.push('/pages/journal');
     }
   };

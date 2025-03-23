@@ -24,6 +24,7 @@ export default function Journal() {
     const [dominantDistortion, setDominantDistortion] = useState<string>("");
     const [showNoDistortionPopup, setShowNoDistortionPopup] = useState(false);
     const [isLoadingPrediction, setIsLoadingPrediction] = useState(false);
+    const selectedIdRef = useRef<string | null>(localStorage.getItem('selectedEntryId'));
 
 
     const distortionColors: Record<string, string> = {
@@ -94,7 +95,17 @@ export default function Journal() {
                     distortions: entry.distortions
                 }));
                 setJournalEntries(formattedEntries);
-                if (formattedEntries.length > 0) setSelectedEntry(formattedEntries[0]);
+
+
+                if (selectedIdRef.current) {
+                    const found = formattedEntries.find((entry) => entry.id === selectedIdRef.current);
+                    if (found) {
+                        setSelectedEntry(found);
+                        localStorage.removeItem('selectedEntryId'); // Clean up
+                    }
+                } else {
+                    if (formattedEntries.length > 0) setSelectedEntry(formattedEntries[0]);
+                }
             } catch (error) {
                 console.error("Failed to fetch journal entries:", error);
             }

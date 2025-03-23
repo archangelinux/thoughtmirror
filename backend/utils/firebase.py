@@ -24,7 +24,7 @@ firebase_credentials = {
 }
 #firebase_credentials
 # Initialize the Firebase app using the credentials
-cred = credentials.Certificate("/Users/gabriel/Documents/GitHub/thoughtmirror/credentials.json")
+cred = credentials.Certificate(os.getenv('PATH_TO_CRED_JSON'))
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()

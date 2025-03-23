@@ -37,7 +37,7 @@ class FirebaseDataAccess:
         if journal_entry is not None:
             self.add_journal_entry(self.uid, journal_entry)
 
-    def add_journal_entry(self, journal_entry: Optional[dict]):
+    def add_journal_entry(self, journal_entry: Optional[dict], post_id: str):
         journal_entries = (
             db.collection(self.collection_name).document(self.uid).collection("journalEntries")
         )
@@ -51,8 +51,9 @@ class FirebaseDataAccess:
             "word_count": len(journal_entry["content"])
         }
 
-        # Add the document to the subcollection (auto-generates a document id)
-        doc_ref = journal_entries.add(entry_data)
+        # Add the document to the subcollection, setting the document id from our postID
+        doc_ref = journal_entries.document(post_id)
+        doc_ref.set(entry_data)
 
         print(f"Journal entry added for user {self.uid} with document reference: {doc_ref}")
         return doc_ref

@@ -18,7 +18,7 @@ class Hasher:
         """
         uniquely hash title and created date to post id
         """
-        unique_str = f"{title}_{date.isoformat()}"
+        unique_str = f"{title}_{date}"
         
         # Generate a deterministic UUID using the DNS namespace.
         post_id = uuid.uuid5(uuid.NAMESPACE_DNS, unique_str)

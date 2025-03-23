@@ -77,7 +77,7 @@ const Calendar: React.FC = () => {
                   { name: "Fortune-Telling", active: true },
                   { name: "Magnification", active: true },
                   { name: "Mind Reading", active: true },
-                  { name: "All-Or-Nothing Thinking", active: true },
+                  { name: "All-Or-Nothing", active: true },
                   { name: "Overgeneralization", active: true },
                   { name: "Mental Filter", active: true },
                   { name: "Emotional Reasoning", active: true },

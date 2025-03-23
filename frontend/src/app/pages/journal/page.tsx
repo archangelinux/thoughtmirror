@@ -22,6 +22,7 @@ export default function Journal() {
     const [highlightRange, setHighlightRange] = useState<{start: number, end: number} | null>(null);
     const titleInputRef = useRef<HTMLInputElement>(null);
     const [dominantDistortion, setDominantDistortion] = useState<string>("");
+    const [showNoDistortionPopup, setShowNoDistortionPopup] = useState(false);
 
     const distortionColors: Record<string, string> = {
         "Personalization": "#D3CEFF",
@@ -269,11 +270,13 @@ export default function Journal() {
       
             if (response.ok) {
                 console.log("Prediction and explanation received successfully:", data);
-                if (data.prediction === "") {
+                if (data.prediction === 0) {
                     // no distortions found
                     setPrediction("");
                     setExplanation("");
                     setHighlightRange(null);
+                    setShowNoDistortionPopup(true);
+                    console.log("none found")
                 } else {
                     const dominant = data.prediction["Dominant Distortion"];
                     setPrediction(data.prediction);
@@ -307,11 +310,26 @@ export default function Journal() {
             setHighlightRange(null);
         }
     };
+
     
     return (
         <div className="flex h-screen pl-30 pt-15 pr-30 gap-20 items-center">
             <div className="w-2/5 h-3/4 px-6 py-6 rounded-2xl bg-transparent border-2 border-blue-400 flex flex-col">
                 <h2 className="text-xl font-bold mb-4">Journal Entries</h2>
+                {showNoDistortionPopup && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center transform transition-all duration-300 scale-95 animate-popup">
+                        <h2 className="text-xl font-bold mb-4">No Cognitive Distortions Detected</h2>
+                        <p className="text-gray-700 mb-4">Your journal entry looks good! No cognitive distortions were found.</p>
+                        <button
+                            onClick={() => setShowNoDistortionPopup(false)}
+                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                        >
+                            Close
+                        </button>
+                        </div>
+                    </div>
+                    )}
                 <div className="flex mb-4 mr-2">
                     <input
                         type="text"

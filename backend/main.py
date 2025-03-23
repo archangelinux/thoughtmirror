@@ -13,6 +13,13 @@ from starlette.middleware.sessions import SessionMiddleware
 from google import genai
 from google.genai.types import HttpOptions
 import os 
+import pandas as pd
+
+from langchain.docstore.document import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, GoogleGenerativeAI
+from langchain_community.vectorstores import FAISS
+from langchain.chains import RetrievalQA
 
 
 app = FastAPI()
@@ -105,7 +112,8 @@ def handle_single_entry_post( request: Request,
 def predict(journal_entry_content: str): 
     LOCATION = "us-central1"
     PROJECT_ID = os.getenv('FIREBASE_PROJECT_ID')
-    FINETUNED_MODEL_NAME = os.getenv('FINETUNED_MODEL_NAME')
+    FINETUNED_MODEL_NAME = f"projects/{os.getenv('MODEL_ID')}/locations/us-central1/endpoints/{os.getenv('MODEL_ENDPOINT_ID')}" 
+    
 
     prompt = (
         f"Journal Entry: {journal_entry_content}\n"
@@ -119,7 +127,7 @@ def predict(journal_entry_content: str):
     client = genai.Client(
         vertexai=True,
         project=PROJECT_ID,
-        location=LOCATION,
+        location=LOCATION, 
         http_options=HttpOptions(api_version="v1"),
     )
 
@@ -136,3 +144,75 @@ def predict(journal_entry_content: str):
 
     print("Model Response:", response.text)
     return response.text
+
+
+def save_vectorstore(therapist_responses_csv="backend/data/Therapist_responses.csv", vectorstore_path="backend/data/therapist_vectorstore"):
+    therapist_df = pd.read_csv(therapist_responses_csv)
+    therapist_df.drop(columns=["Question", "Id_Number"], inplace=True)
+    therapist_df = therapist_df[:1000]
+    therapist_df["Answer"] = therapist_df["Answer"].fillna('').astype(str)# 1000/4702
+    therapist_str = " ".join(therapist_df["Answer"].tolist())
+
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000,
+        chunk_overlap=200
+    )
+    chunks = text_splitter.split_text(therapist_str)
+
+    documents = [Document(page_content=chunk) for chunk in chunks]
+
+    vectorstore.save_local(vectorestore_path)
+
+def create_qa_chain(vectorstore_path="backend/data/therapist_vectorstore"):
+    api_key = os.environ.get("GOOGLE_API_KEY")
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/embedding-001",
+        google_api_key=api_key
+    )
+
+    vectorstore = FAISS.load_local(vectorstore_path, embeddings, allow_dangerous_deserialization=True)
+    retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 3})
+    llm = GoogleGenerativeAI(model="gemini-2.0-flash-001", google_api_key=api_key)
+
+    qa_chain = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=retriever)
+    return qa_chain
+
+
+def generate_explanation(prediction: dict, qa_chain) -> str:
+    """
+    Given a classifier prediction dict with keys:
+      - "Distorted part"
+      - "Dominant Distortion"
+      - "Secondary Distortion (Optional)"
+    
+    Build a prompt and use a RAG pipeline via LangChain to generate a 2-3 sentence explanation.
+    """
+    # Build the explanation prompt from the prediction.
+    explanation_prompt = (
+        f"You are a cognitive behavioral therapist explaining to a patient how text they wrote demonstrates a specific cognitive distortion.\n"
+        f"Patient's Text: {prediction.get('Distorted part', 'N/A')}\n"
+        f"Dominant Distortion: {prediction.get('Dominant Distortion', 'N/A')}\n"
+        f"Secondary Distortion (Optional): {prediction.get('Secondary Distortion (Optional)', 'None')}\n\n"
+        "Provide a therapy-driven explanation in 2-3 sentences to help the patient reflect on their distortions."
+    )
+    
+    # Optionally, include a note that the explanation should be informed by CBT principles.
+    full_prompt = explanation_prompt
+    
+    # Use the RetrievalQA chain to generate an explanation.
+    explanation = qa_chain.run(full_prompt)
+    return explanation
+
+if __name__ == "__main__":
+    # Test the prediction
+    #prompt = "I’m 12 and have been caught lying many times. I want to stop, but I don’t know how. My mom is on the verge of disowning me. I cry everyday, and try to stop but it just comes out. I feel as if I have to lie because I’m scared of the outcome. I have tried communicating this problem with my parents but they refuse to understand. I have attempted suicide, because I am sick of life. Please, please help before I either kill myself, or my mom disowns me."
+    #predict(prompt)
+
+    # Create QA chain
+
+    qa_chain = create_qa_chain()
+
+    sample_prediction = {"Distorted part": "I don’t know if I’m delusional or a genius. I go through these stages where I have these weird thoughts. Like a few days ago, I convinced myself I was bipolar even though I’ve never had a manic episode or anything close, but I thought I had. I also convinced myself I was autistic, had OCD, and was schizophrenic, schizotypal or schizoid. Now I’m convinced I’m delusional. But that could just be a delusion I wouldn’t be delusional.", "Dominant Distortion": "Labeling", "Secondary Distortion (Optional)": "Fortune-telling"}
+
+    explanation_text = generate_explanation(sample_prediction, qa_chain)
+    print(explanation_text)

@@ -1,0 +1,3 @@
+.bg-top bg-no-repeat min-h-screen flex items-center justify-center pt-20 {
+    transform: translateY(-10vh);
+}

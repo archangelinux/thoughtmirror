@@ -19,7 +19,7 @@ export default function Journal() {
     const [editedTitle, setEditedTitle] = useState("");
     const [prediction, setPrediction] = useState<string>("");
     const [explanation, setExplanation] = useState<string>("");
-    const [highlightRange, setHighlightRange] = useState<{ start: number, end: number } | null>(null);
+    const [highlightRange, setHighlightRange] = useState<{start: number, end: number} | null>(null);
     const titleInputRef = useRef<HTMLInputElement>(null);
     const [dominantDistortion, setDominantDistortion] = useState<string>("");
 
@@ -45,12 +45,11 @@ export default function Journal() {
       }) => {
         if (!content) return null;
         if (!highlightRange) {
-            //return content without highlight
-            return (
-                <div className="text-[13px] flex-grow w-full p-4 border border-gray-200 rounded-lg overflow-auto whitespace-pre-wrap">
-                    {content}
-                </div>
-            );
+          return (
+            <div className="text-[13px] flex-grow w-full p-4 border border-gray-200 rounded-lg overflow-auto whitespace-pre-wrap">
+              {content}
+            </div>
+          );
         }
       
         const beforeHighlight = content.substring(0, highlightRange.start);
@@ -58,18 +57,22 @@ export default function Journal() {
         const afterHighlight = content.substring(highlightRange.end);
       
         return (
-            <div className="text-[13px] flex-grow w-full p-4 border border-gray-200 rounded-lg overflow-auto whitespace-pre-wrap">
-                {beforeHighlight}
-                <span className="bg-yellow-200 relative group cursor-pointer" style={{ backgroundColor: highlightColor }}>
-                    {highlightedText}
-                    <div className="absolute z-50 invisible group-hover:visible bg-blue-200 text-black p-2 rounded-md text-sm max-w-xs w-max 
+          <div className="text-[13px] flex-grow w-full p-4 border border-gray-200 rounded-lg overflow-auto whitespace-pre-wrap">
+            {beforeHighlight}
+            <span 
+              className="relative group cursor-help"
+              title={explanation}
+              style={{ backgroundColor: highlightColor }}
+            >
+              {highlightedText}
+              <div className="absolute z-50 invisible group-hover:visible bg-blue-200 text-black p-2 rounded-md text-sm max-w-xs w-max 
         bottom-auto top-full left-1/2 transform -translate-x-1/2 mt-2">
                         {explanation}
                         <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-blue-200"></div>
                     </div>
                 </span>
-                {afterHighlight}
-            </div>
+            {afterHighlight}
+          </div>
         );
     };
 
@@ -131,7 +134,7 @@ export default function Journal() {
 
     const handleDeleteEntry = async (id: string) => {
         if (!selectedEntry) return;
-
+      
         if (confirm("Are you sure you want to delete this journal entry? This action cannot be undone.")) {
             const updatedEntries = journalEntries.filter(entry => entry.id !== id);
             setJournalEntries(updatedEntries);
@@ -142,7 +145,7 @@ export default function Journal() {
                 setExplanation("");
                 setHighlightRange(null);
             }
-
+            
             //calls endpoint to delete entry from Firebase
             try {
                 const response = await fetch("http://127.0.0.1:8000/delete_entry", {
@@ -177,7 +180,7 @@ export default function Journal() {
         setJournalEntries(journalEntries.map(entry =>
             entry.id === updatedEntry.id ? updatedEntry : entry
         ));
-
+        
         //clear highlights when content changes
         setPrediction("");
         setExplanation("");
@@ -223,7 +226,7 @@ export default function Journal() {
 
     const postJournalEntry = async () => {
         if (!selectedEntry) return;
-
+    
         try {
             const response = await fetch("http://127.0.0.1:8000/handle_single_entry", {
                 method: "POST",
@@ -234,9 +237,9 @@ export default function Journal() {
                     title: selectedEntry.title
                 })
             });
-
+    
             await response.json();
-
+    
             if (response.ok) {
                 console.log("Data sent successfully");
             } else {
@@ -249,7 +252,7 @@ export default function Journal() {
 
     const handlePrediction = async () => {
         if (!selectedEntry) return;
-
+      
         try {
             const response = await fetch("http://127.0.0.1:8000/handle_prediction", {
                 method: "POST",
@@ -260,10 +263,10 @@ export default function Journal() {
                     title: selectedEntry.title,
                 }),
             });
-
-            //const data = await response.json();
-            const data = { prediction: "Only problem", explanation: "test" };
-
+      
+           const data = await response.json();
+           //const data = {prediction:"Also, it would only worsen the situation. Instead, if he spoke for him, they would be always forgive their son.", explanation: "test"}
+      
             if (response.ok) {
                 console.log("Prediction and explanation received successfully:", data);
                 if (data.prediction === "") {
@@ -304,7 +307,7 @@ export default function Journal() {
             setHighlightRange(null);
         }
     };
-
+    
     return (
         <div className="flex h-screen pl-30 pt-15 pr-30 gap-20 items-center">
             <div className="w-2/5 h-3/4 px-6 py-6 rounded-2xl bg-transparent border-2 border-blue-400 flex flex-col">
@@ -360,75 +363,69 @@ export default function Journal() {
                                 />
                             </div>
                         ) : (
-                            <div className="flex flex-row justify-between mb-2">
-                                <div className="flex flex-col">
-                                    <div className="flex items-center justify-between mb-2 w-full">
-                                        <h1
-                                            className="text-3xl font-bold flex items-center group cursor-pointer overflow-hidden max-w-[90%]"
-                                            onClick={startEditingTitle}
-                                            title={selectedEntry.title}>
-                                            <div className="truncate max-w-full">{selectedEntry.title}</div>
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-5 w-5 ml-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                                                />
-                                            </svg>
-                                        </h1>
-                                    </div>
-                                    <div className="flex flex-col mb-6 text-gray-600">
-                                        <span className="text-sm">Created: {formatDateTime(selectedEntry.createdAt)}</span>
-                                        {selectedEntry.createdAt !== selectedEntry.updatedAt && (
-                                            <span className="text-sm">Last updated: {formatDateTime(selectedEntry.updatedAt)}</span>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col gap-2">
-                                    <button
-                                        className="w-35 h-13 px-2 rounded-lg bg-transparent  italic border-1 border-blue-400 flex items-center justify-center text-blue-500 text-sm hover:bg-yellow-200 hover:border-transparent transition-colors flex-shrink-0"
+                            <div className="flex items-center justify-between mb-2 w-full">
+                                <h1
+                                    className="text-3xl font-bold flex items-center group cursor-pointer overflow-hidden max-w-[90%]"
+                                    onClick={startEditingTitle}
+                                    title={selectedEntry.title}
+                                >
+                                    <div className="truncate max-w-full">{selectedEntry.title}</div>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-5 w-5 ml-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                        />
+                                    </svg>
+                                </h1>
+                                <div className="flex flex-row gap-5">
+                                    <button 
+                                        className="w-30 h-18 pl-2 rounded-xl bg-transparent border-1 border-blue-400 flex items-center justify-center text-blue-500 text-sm hover:bg-yellow-200 hover:border-transparent transition-colors flex-shrink-0"
                                         onClick={handlePrediction}
                                     >
-                                        MIRROR MODE <Image src="/hand_mirror.svg" alt="Logo" width={45} height={45} priority />
+                                        Mirror Mode <Image src="/hand_mirror.svg" alt="Logo" width={60} height={60} priority />
                                     </button>
                                     <button
-                                        className="w-35 h-6 gap-5 rounded-md bg-transparent   border-1 border-blue-400 flex items-center justify-center text-blue-500 text-sm hover:bg-yellow-200 hover:border-transparent transition-colors flex-shrink-0"
+                                        className="w-18 h-18 rounded-full bg-blue-400 border-1 border-blue-400 flex items-center justify-center text-white hover:bg-blue-500 transition-colors flex-shrink-0"
                                         onClick={postJournalEntry}
                                     >
-                                        SAVE
+                                        save
                                     </button>
                                 </div>
                             </div>
                         )}
-
-
-
+                        <div className="flex flex-col mb-6 text-gray-600">
+                            <span className="text-sm">Created: {formatDateTime(selectedEntry.createdAt)}</span>
+                            {selectedEntry.createdAt !== selectedEntry.updatedAt && (
+                                <span className="text-sm">Last updated: {formatDateTime(selectedEntry.updatedAt)}</span>
+                            )}
+                        </div>
+                        
                         {highlightRange ? (
                             // Show highlighted view when we have a prediction
                             <>
-                                <HighlightedJournalContent
-                                    content={selectedEntry.content}
+                                <HighlightedJournalContent 
+                                    content={selectedEntry.content} 
                                     highlightRange={highlightRange}
                                     explanation={explanation}
                                     highlightColor={distortionColors[dominantDistortion] || '#FFD700'} // fallback color
                                 />
                                 <button
-                                    className=" text-lg mt-4 px-4 py-2 border-2 italic border-blue-400 text-blue-400 rounded-lg hover:border-blue-400 transition-colors"
+                                    className="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
                                     onClick={() => {
                                         setPrediction("");
                                         setExplanation("");
                                         setHighlightRange(null);
                                     }}
                                 >
-                                    RETURN TO EDITING
+                                    Return to Editing
                                 </button>
                             </>
                         ) : (

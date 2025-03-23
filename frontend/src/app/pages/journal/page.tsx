@@ -190,10 +190,12 @@ export default function Journal() {
           const data = await response.json();
       
           if (response.ok) {
-            console.log("Prediction and explanation received successfully:", data);
-            // For example, update state with the returned prediction and explanation:
+            if (data.prediction === 0) {
+                // handle case when there's no cognitive distortions
+            }
+            console.log("Prediction and explanation received successfully:", data);  
             // setPrediction(data.prediction);
-            // setExplanation(data.explanation);
+            // setExplanation(data.explanation);          
           } else {
             console.error("Failed to get prediction:", data);
           }

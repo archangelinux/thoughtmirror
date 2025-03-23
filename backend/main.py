@@ -149,13 +149,6 @@ async def handle_prediction(
     ),
     title: str = Body(..., embed=True, description="The title of the journal entry."),
 ):
-    import google.auth
-
-    creds, project = google.auth.default()
-    print("Default credentials:", creds)
-    print("Credential object details:")
-    print(creds.__dict__)
-    print("Project:", project)
     # save to firebase, exact same as handle single entry
     hasher = Hasher()
     post_id = hasher.title_to_postid(title, creation_date)
@@ -172,7 +165,8 @@ async def handle_prediction(
     # --- Step 2: Get the prediction for cognitive distortions ---
     try:
         prediction_text = predict(content)  # predict() returns a JSON string
-        print(prediction_text)
+        if "none" in prediction_text.lower():
+            return {"prediction": 0, "explanation": 0}
         prediction_dict = json.loads(prediction_text)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during prediction: {e}")

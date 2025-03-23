@@ -255,18 +255,17 @@ export default function Journal() {
                                       
                                       // Send the content to your backend using fetch
                                       const response = await fetch("http://localhost:8000/handle_single_entry", {
-                                        method: "POST",
+                                        method: "post",
                                         headers: {
                                           "Content-Type": "application/json",
                                         },
                                         body: JSON.stringify({
+                                            creation_date: creation_date,
+                                            action: "post",
                                             "entry": {
                                                 "content": content,
                                                 "title": title,
-                                                ""
-                                            creation_date: creation_date, // Send the creation date
-                                            action: "post",               // Action is "post" for creating a new entry
-                                          }),
+                                            }})
                                       });
                                       
                                       const data = await response.json();

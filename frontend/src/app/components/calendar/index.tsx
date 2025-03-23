@@ -96,11 +96,6 @@ const Calendar: React.FC = () => {
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
-          headerToolbar={{
-            left: "prev next",
-            center: "title",
-            right: "dayGridMonth timeGridWeek",
-          }}
           events={[]}
           dayCellContent={renderDayCell}
           dateClick={handleDateClick}

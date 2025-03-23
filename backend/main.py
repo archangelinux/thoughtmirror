@@ -80,26 +80,22 @@ def get_single_entry( request: Request,
         raise HTTPException(status_code=400, detail="Invalid action for GET request. Only 'get' is allowed.")
 
 @app.post("/handle_single_entry/")
-def handle_single_entry_post( request: Request,
+def handle_single_entry_post(request: Request,
+    creation_date: str = Body(..., embed=True, description="The creation date of the journal entry."),
     action: str = Body(..., embed=True, description="Action to perform: 'post', 'update', or 'delete'"),
-    post_id: Optional[str] = Body(None, embed=True, description="The post ID for 'update' or 'delete' actions"),
     entry: Optional[JournalEntryPayload] = Body(None, embed=True, description="Journal entry data for 'post' or 'update'")
 ):
-
+    hasher = Hasher()
+    post_id = hasher.title_to_postid(entry.title, creation_date)
     user_id = request.session.get("user_id") or "0"
     fda = FirebaseDataAccess("users", uid=user_id)
     action = action.lower()
-    if action == "post":
+    if action == 'post' or action =='update':
         if entry is None or entry.title is None or entry.content is None:
             raise HTTPException(status_code=400, detail="Entry data with title and content is required for posting.")
         # Create a new journal entry and capture the generated post_id
-        new_post_id = fda.add_journal_entry(entry.model_dump())
-        return {"post_id": new_post_id, "message": "Journal entry created."}
-    elif action == "update":
-        if post_id is None or entry is None:
-            raise HTTPException(status_code=400, detail="Post ID and entry data required for update.")
-        updated = fda.update_journal_entry(post_id, entry.model_dump()) # NOT IMPLEMENTED RN
-        return updated
+        returned_post_id = fda.add_journal_entry(entry.model_dump(), post_id)
+        return {"post_id": returned_post_id, "message": "Journal entry created."}
     elif action == "delete":
         if post_id is None:
             raise HTTPException(status_code=400, detail="Post ID is required for deletion.")

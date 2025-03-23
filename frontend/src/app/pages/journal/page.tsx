@@ -245,7 +245,43 @@ export default function Journal() {
                                 <button className="w-18 h-18 rounded-full bg-transparent border-1 border-blue-400 flex items-center justify-center text-white hover:bg-blue-500 transition-colors flex-shrink-0">
                                     <Image src="/hand_mirror.svg" alt="Logo" width={60} height={60} priority />   
                                 </button>
-                                <button className="w-18 h-18 rounded-full bg-blue-400 border-1 border-blue-400 flex items-center justify-center text-white hover:bg-blue-500 transition-colors flex-shrink-0">
+                                <button className="w-18 h-18 rounded-full bg-blue-400 border-1 border-blue-400 flex items-center justify-center text-white hover:bg-blue-500 transition-colors flex-shrink-0"
+                                onClick={async () => {
+                                    try {
+                                      // Get the content of the text area
+                                      const content = selectedEntry.content;
+                                      const title = selectedEntry.title || "Untitled Entry";
+                                      const creation_date = selectedEntry.createdAt;
+                                      
+                                      // Send the content to your backend using fetch
+                                      const response = await fetch("http://localhost:8000/handle_single_entry", {
+                                        method: "post",
+                                        headers: {
+                                          "Content-Type": "application/json",
+                                        },
+                                        body: JSON.stringify({
+                                            creation_date: creation_date,
+                                            action: "post",
+                                            "entry": {
+                                                "content": content,
+                                                "title": title,
+                                            }})
+                                      });
+                                      
+                                      const data = await response.json();
+                                      
+                                      if (response.ok) {
+                                        // Handle success (e.g., display a success message)
+                                        console.log("Data sent successfully:", data);
+                                      } else {
+                                        // Handle error response from the backend
+                                        console.error("Failed to send data:", data);
+                                      }
+                                    } catch (error) {
+                                      console.error("Error while sending data:", error);
+                                    }
+                                  }}
+                                >
                                     save
                                 </button>
                                 </div>

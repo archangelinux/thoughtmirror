@@ -4,11 +4,6 @@ import JournalEntryList, { JournalEntry } from "@/app/components/entrylist";
 import Image from "next/image";
 import { v4 as uuidv4 } from 'uuid';
 
-interface HighlightedJournalContentProps {
-    content: string;
-    highlightRange: { start: number; end: number } | null;
-    explanation: string;
-}
 
 export default function Journal() {
     const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
@@ -16,48 +11,7 @@ export default function Journal() {
     const [newEntryTitle, setNewEntryTitle] = useState("");
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [editedTitle, setEditedTitle] = useState("");
-    const [prediction, setPrediction] = useState<string>("");
-    const [explanation, setExplanation] = useState<string>("");
-    const [highlightRange, setHighlightRange] = useState<{start: number, end: number} | null>(null);
     const titleInputRef = useRef<HTMLInputElement>(null);
-
-    //component for highlighted mirror mode
-    const HighlightedJournalContent: React.FC<HighlightedJournalContentProps> = ({ 
-        content, 
-        highlightRange, 
-        explanation 
-      }) => {
-        if (!content) return null;
-        if (!highlightRange) {
-          //return content without highlight
-          return (
-            <div className="text-[13px] flex-grow w-full p-4 border border-gray-200 rounded-lg overflow-auto whitespace-pre-wrap">
-              {content}
-            </div>
-          );
-        }
-
-        const beforeHighlight = content.substring(0, highlightRange.start);
-        const highlightedText = content.substring(highlightRange.start, highlightRange.end);
-        const afterHighlight = content.substring(highlightRange.end);
-
-        return (
-            <div className="text-[13px] flex-grow w-full p-4 border border-gray-200 rounded-lg overflow-auto whitespace-pre-wrap">
-                {beforeHighlight}
-                <span 
-                    className="bg-yellow-200 relative group cursor-help"
-                    title={explanation}
-                >
-                    {highlightedText}
-                    <div className="absolute z-10 invisible group-hover:visible bg-gray-800 text-white p-2 rounded-md text-sm max-w-xs w-max bottom-full left-1/2 transform -translate-x-1/2 mb-2">
-                        {explanation}
-                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
-                    </div>
-                </span>
-                {afterHighlight}
-            </div>
-        );
-    };
 
     // Fetch entries from backend on mount
     useEffect(() => {
@@ -103,50 +57,44 @@ export default function Journal() {
             createdAt: currentTime,
             updatedAt: currentTime
         };
-        //reset states
+
         const updatedEntries = [newEntry, ...journalEntries];
         setJournalEntries(updatedEntries);
         setSelectedEntry(newEntry);
         setNewEntryTitle("");
-        setPrediction("");
-        setExplanation("");
-        setHighlightRange(null);
     };
 
     const handleDeleteEntry = async (id: string) => {
         if (!selectedEntry) return;
       
         if (confirm("Are you sure you want to delete this journal entry? This action cannot be undone.")) {
-            const updatedEntries = journalEntries.filter(entry => entry.id !== id);
-            setJournalEntries(updatedEntries);
-            if (selectedEntry && selectedEntry.id === id) {
-                setSelectedEntry(updatedEntries.length > 0 ? updatedEntries[0] : null);
-                //clear active highlights for new selection
-                setPrediction("");
-                setExplanation("");
-                setHighlightRange(null);
+          // Update local state
+          const updatedEntries = journalEntries.filter(entry => entry.id !== id);
+          setJournalEntries(updatedEntries);
+          if (selectedEntry && selectedEntry.id === id) {
+            setSelectedEntry(updatedEntries.length > 0 ? updatedEntries[0] : null);
+          }
+          
+          // Call the backend endpoint to delete the entry in Firebase
+          try {
+            const response = await fetch("http://127.0.0.1:8000/delete_entry", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  title: selectedEntry.title,
+                  creation_date: selectedEntry.createdAt,
+                }),
+              });
+            console.log(selectedEntry.title, selectedEntry.createdAt)
+            const data = await response.json();
+            if (response.ok) {
+              console.log("Journal entry deleted successfully:", data);
+            } else {
+              console.error("Failed to delete journal entry:", data);
             }
-            
-            //calls endpoint to delete entry from Firebase
-            try {
-                const response = await fetch("http://127.0.0.1:8000/delete_entry", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        title: selectedEntry.title,
-                        creation_date: selectedEntry.createdAt,
-                    }),
-                });
-                console.log(selectedEntry.title, selectedEntry.createdAt)
-                const data = await response.json();
-                if (response.ok) {
-                    console.log("Journal entry deleted successfully:", data);
-                } else {
-                    console.error("Failed to delete journal entry:", data);
-                }
-            } catch (error) {
-                console.error("Error while deleting journal entry:", error);
-            }
+          } catch (error) {
+            console.error("Error while deleting journal entry:", error);
+          }
         }
     };
 
@@ -161,11 +109,6 @@ export default function Journal() {
         setJournalEntries(journalEntries.map(entry =>
             entry.id === updatedEntry.id ? updatedEntry : entry
         ));
-        
-        //clear highlights when content changes
-        setPrediction("");
-        setExplanation("");
-        setHighlightRange(null);
     };
 
     const startEditingTitle = () => {
@@ -235,54 +178,30 @@ export default function Journal() {
         if (!selectedEntry) return;
       
         try {
-            const response = await fetch("http://127.0.0.1:8000/handle_prediction", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    creation_date: selectedEntry.createdAt,
-                    content: selectedEntry.content,
-                    title: selectedEntry.title,
-                }),
-            });
+          const response = await fetch("http://127.0.0.1:8000/handle_prediction", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              creation_date: selectedEntry.createdAt,
+              content: selectedEntry.content,
+              title: selectedEntry.title,
+            }),
+          });
       
-           const data = await response.json();
-           //const data = {prediction:"Also, it would only worsen the situation. Instead, if he spoke for him, they would be always forgive their son.", explanation: "test"}
+          const data = await response.json();
       
-            if (response.ok) {
-                console.log("Prediction and explanation received successfully:", data);
-                if (data.prediction === "") {
-                    // no distortions found
-                    setPrediction("");
-                    setExplanation("");
-                    setHighlightRange(null);
-                } else {
-                    setPrediction(data.prediction);
-                    setExplanation(data.explanation || "Potential cognitive distortion detected");
-                    //find prediction text in entry
-                    const predictionText = data.prediction;
-                    const contentText = selectedEntry.content;
-                    const startIndex = contentText.indexOf(predictionText);
-                    //highlight
-                    if (startIndex !== -1) {
-                        setHighlightRange({
-                            start: startIndex,
-                            end: startIndex + predictionText.length
-                        });
-                    } else {
-                        setHighlightRange(null); //if text not found
-                    }
-                }
-            } else {
-                console.error("Failed to get prediction:", data);
-                setPrediction("");
-                setExplanation("");
-                setHighlightRange(null);
+          if (response.ok) {
+            if (data.prediction === 0) {
+                // handle case when there's no cognitive distortions
             }
+            console.log("Prediction and explanation received successfully:", data);  
+            // setPrediction(data.prediction);
+            // setExplanation(data.explanation);          
+          } else {
+            console.error("Failed to get prediction:", data);
+          }
         } catch (error) {
-            console.error("Error while sending prediction request:", error);
-            setPrediction("");
-            setExplanation("");
-            setHighlightRange(null);
+          console.error("Error while sending prediction request:", error);
         }
     };
     
@@ -309,13 +228,7 @@ export default function Journal() {
 
                 <JournalEntryList
                     entries={journalEntries}
-                    onEntrySelect={(entry) => {
-                        setSelectedEntry(entry);
-                        // Clear any active highlights when changing selected entry
-                        setPrediction("");
-                        setExplanation("");
-                        setHighlightRange(null);
-                    }}
+                    onEntrySelect={setSelectedEntry}
                     onEntryDelete={handleDeleteEntry}
                     maxTitleLength={30}
                 />
@@ -365,10 +278,10 @@ export default function Journal() {
                                 </h1>
                                 <div className="flex flex-row gap-5">
                                     <button 
-                                        className="w-30 h-18 pl-2 rounded-xl bg-transparent border-1 border-blue-400 flex items-center justify-center text-blue-500 text-sm hover:bg-yellow-200 hover:border-transparent transition-colors flex-shrink-0"
+                                        className="w-18 h-18 rounded-full bg-transparent border-1 border-blue-400 flex items-center justify-center text-white hover:bg-blue-500 transition-colors flex-shrink-0"
                                         onClick={handlePrediction}
                                     >
-                                        Mirror Mode <Image src="/hand_mirror.svg" alt="Logo" width={60} height={60} priority />
+                                        <Image src="/hand_mirror.svg" alt="Logo" width={60} height={60} priority />
                                     </button>
                                     <button
                                         className="w-18 h-18 rounded-full bg-blue-400 border-1 border-blue-400 flex items-center justify-center text-white hover:bg-blue-500 transition-colors flex-shrink-0"
@@ -385,35 +298,12 @@ export default function Journal() {
                                 <span className="text-sm">Last updated: {formatDateTime(selectedEntry.updatedAt)}</span>
                             )}
                         </div>
-                        
-                        {highlightRange ? (
-                            // Show highlighted view when we have a prediction
-                            <>
-                                <HighlightedJournalContent 
-                                    content={selectedEntry.content} 
-                                    highlightRange={highlightRange}
-                                    explanation={explanation}
-                                />
-                                <button
-                                    className="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-                                    onClick={() => {
-                                        setPrediction("");
-                                        setExplanation("");
-                                        setHighlightRange(null);
-                                    }}
-                                >
-                                    Return to Editing
-                                </button>
-                            </>
-                        ) : (
-                            // Show editable textarea when no prediction is active
-                            <textarea
-                                className="text-[13px] flex-grow w-full p-4 border border-gray-200 rounded-lg focus:outline-none"
-                                placeholder="Write your thoughts here... watch their reflections appear."
-                                value={selectedEntry.content}
-                                onChange={(e) => handleEntryContentChange(e.target.value)}
-                            />
-                        )}
+                        <textarea
+                            className="text-[13px] flex-grow w-full p-4 border border-gray-200 rounded-lg focus:outline-none"
+                            placeholder="Write your thoughts here... watch their reflections appear."
+                            value={selectedEntry.content}
+                            onChange={(e) => handleEntryContentChange(e.target.value)}
+                        />
                     </>
                 ) : (
                     <div className="flex items-center justify-center h-full">

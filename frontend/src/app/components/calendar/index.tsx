@@ -22,6 +22,17 @@ const Calendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [entries, setEntries] = useState<JournalEntry[]>([]);
 
+  // Add state for distortions data fetched from backend
+  const [distortionData, setDistortionData] = useState<any[]>([]);
+
+  // Fetch distortion data from backend on mount
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/get_calendar_distortions")
+      .then(res => res.json())
+      .then(data => setDistortionData(data))
+      .catch(err => console.error("Failed to fetch distortions:", err));
+  }, []);
+
   //local storage
   useEffect(() => {
     const savedEntries = localStorage.getItem("journalEntries");
@@ -60,31 +71,26 @@ const Calendar: React.FC = () => {
   //custome rendering of cells
   const renderDayCell = (info: any) => {
     const dayNumber = format(info.date, "d");
-    const hasEntries = findEntriesForDate(info.date).length > 0;
+  
+    // Find distortions for the specific date
+    const dayDistortionEntry = distortionData.find((entry) =>
+      isSameDay(parseISO(entry.createdAt), info.date)
+    );
   
     return (
       <div className="relative h-full w-full flex flex-col justify-between">
-        {/* Day Number in the top-right */}
         <div className="absolute top-1 right-2 text-sm text-gray-700">{dayNumber}</div>
   
-        {/* DistortionWidget positioned at the bottom without affecting layout */}
-        {hasEntries && (
-          <div className="absolute top-[-30px] right-2 ">
-              <DistortionWidget
-                distortionTraits={[
-                  { name: "Personalization", active: true },
-                  { name: "Labeling", active: true },
-                  { name: "Fortune-Telling", active: true },
-                  { name: "Magnification", active: true },
-                  { name: "Mind Reading", active: true },
-                  { name: "All-Or-Nothing", active: true },
-                  { name: "Overgeneralization", active: true },
-                  { name: "Mental Filter", active: true },
-                  { name: "Emotional Reasoning", active: true },
-                  { name: "Should Statements", active: true }
-                ]}
-              />
-            </div>
+        {/* If distortions exist for the day, render DistortionWidget */}
+        {dayDistortionEntry && (
+          <div className="absolute top-[-30px] right-2">
+            <DistortionWidget
+              distortionTraits={dayDistortionEntry.distortions.map((distortionName: string) => ({
+                name: distortionName,
+                active: true
+              }))}
+            />
+          </div>
         )}
       </div>
     );

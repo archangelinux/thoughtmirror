@@ -186,6 +186,21 @@ async def handle_prediction(
     return {"prediction": prediction_dict, "explanation": explanation}
 
 
+@app.get("/get_calendar_distortions")
+def get_calendar_distortions(request: Request):
+    user_id = request.session.get("user_id") or "0"
+    fda = FirebaseDataAccess("users", uid=user_id)
+    entries = fda.get_journal_entries() 
+
+    response = []
+    for entry in entries:
+        response.append({
+            "createdAt": entry["time_created"],
+            "distortions": entry.get("detected_distortions", [])
+        })
+    return response
+
+
 def save_vectorstore(
     therapist_responses_csv="backend/data/Therapist_responses.csv",
     vectorstore_path="backend/data/therapist_vectorstore",

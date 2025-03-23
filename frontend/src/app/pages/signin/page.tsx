@@ -21,6 +21,7 @@ function SendEmail(userEmail: string) {
       const data = await response.json();
 
       if (response.ok) {
+        console.log("SENT EMAIL");
         console.log(data.message);
       } else {
         console.log(`Error: ${data.error}`);

@@ -89,6 +89,7 @@ class FirebaseDataAccess:
         """
         Retrieve all journal entries for a given user.
         """
+        print("hi")
         journal_entries_ref = (
             db.collection(self.collection_name).document(self.uid).collection("journalEntries")
         )

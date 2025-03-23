@@ -1,7 +1,8 @@
 from typing import Optional
 from utils.firebase import db
 from firebase_admin import firestore
-
+import dateutil.parser
+import datetime
 
 class FirebaseDataAccess:
     """
@@ -61,6 +62,7 @@ class FirebaseDataAccess:
         """
         delete a journal entry from the database
         """
+        print(post_id)
         journal_entry_ref = (
             db.collection(self.collection_name)
             .document(self.uid)
@@ -89,7 +91,6 @@ class FirebaseDataAccess:
         """
         Retrieve all journal entries for a given user.
         """
-        print("hi")
         journal_entries_ref = (
             db.collection(self.collection_name).document(self.uid).collection("journalEntries")
         )
@@ -111,11 +112,28 @@ class FirebaseDataAccess:
                     "word_count": len(data.get("post_content"))
                 }
             )
+
+        # Helper function to convert any datetime (string or object) to an offset-aware UTC datetime.
+        def parse_time(t):
+            # Parse t into a datetime object if it's a string.
+            if isinstance(t, str):
+                dt = dateutil.parser.parse(t)
+            else:
+                dt = t
+            # If dt is offset-naive, assume it's in UTC and make it offset-aware.
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=datetime.timezone.utc)
+            else:
+                # Convert dt to UTC
+                dt = dt.astimezone(datetime.timezone.utc)
+            return dt
+
+        # Sort results by 'time_created' (converted to UTC) in descending order.
+        results = sorted(results, key=lambda x: parse_time(x["time_created"]), reverse=True)
+        
+
         return results
-    
-    def upload_journal_entries(self, user_email):
-        # users: {self.uid: [user_email, journalEntries: dict]}
-        pass
+ 
 
 if __name__ == "__main__":
     fda = FirebaseDataAccess(collection_name="users", uid="ah34r")

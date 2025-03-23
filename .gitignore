@@ -12,3 +12,5 @@ node_modules/
 credentials.json
 client_secret.json
 google-cloud-sdk/
+
+service_account.json

@@ -63,13 +63,37 @@ export default function Journal() {
         setNewEntryTitle("");
     };
 
-    const handleDeleteEntry = (id: string) => {
+    const handleDeleteEntry = async (id: string) => {
+        if (!selectedEntry) return;
+      
         if (confirm("Are you sure you want to delete this journal entry? This action cannot be undone.")) {
-            const updatedEntries = journalEntries.filter(entry => entry.id !== id);
-            setJournalEntries(updatedEntries);
-            if (selectedEntry && selectedEntry.id === id) {
-                setSelectedEntry(updatedEntries.length > 0 ? updatedEntries[0] : null);
+          // Update local state
+          const updatedEntries = journalEntries.filter(entry => entry.id !== id);
+          setJournalEntries(updatedEntries);
+          if (selectedEntry && selectedEntry.id === id) {
+            setSelectedEntry(updatedEntries.length > 0 ? updatedEntries[0] : null);
+          }
+          
+          // Call the backend endpoint to delete the entry in Firebase
+          try {
+            const response = await fetch("http://127.0.0.1:8000/delete_entry", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  title: selectedEntry.title,
+                  creation_date: selectedEntry.createdAt,
+                }),
+              });
+            console.log(selectedEntry.title, selectedEntry.createdAt)
+            const data = await response.json();
+            if (response.ok) {
+              console.log("Journal entry deleted successfully:", data);
+            } else {
+              console.error("Failed to delete journal entry:", data);
             }
+          } catch (error) {
+            console.error("Error while deleting journal entry:", error);
+          }
         }
     };
 
@@ -123,6 +147,61 @@ export default function Journal() {
         });
     };
 
+    const postJournalEntry = async () => {
+        if (!selectedEntry) return;
+    
+        try {
+            const response = await fetch("http://127.0.0.1:8000/handle_single_entry", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    creation_date: selectedEntry.createdAt,
+                    content: selectedEntry.content,
+                    title: selectedEntry.title
+                })
+            });
+    
+            await response.json();
+    
+            if (response.ok) {
+                console.log("Data sent successfully");
+            } else {
+                console.error("Failed to send data");
+            }
+        } catch (error) {
+            console.error("Error while sending data:", error);
+        }
+    };
+
+    const handlePrediction = async () => {
+        if (!selectedEntry) return;
+      
+        try {
+          const response = await fetch("http://127.0.0.1:8000/handle_prediction", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              creation_date: selectedEntry.createdAt,
+              content: selectedEntry.content,
+              title: selectedEntry.title,
+            }),
+          });
+      
+          const data = await response.json();
+      
+          if (response.ok) {
+            console.log("Prediction and explanation received successfully:", data);
+            // For example, update state with the returned prediction and explanation:
+            // setPrediction(data.prediction);
+            // setExplanation(data.explanation);
+          } else {
+            console.error("Failed to get prediction:", data);
+          }
+        } catch (error) {
+          console.error("Error while sending prediction request:", error);
+        }
+    };
+    
     return (
         <div className="flex h-screen pl-30 pt-15 pr-30 gap-20 items-center">
             <div className="w-2/5 h-3/4 px-6 py-6 rounded-2xl bg-transparent border-2 border-blue-400 flex flex-col">
@@ -195,29 +274,15 @@ export default function Journal() {
                                     </svg>
                                 </h1>
                                 <div className="flex flex-row gap-5">
-                                    <button className="w-18 h-18 rounded-full bg-transparent border-1 border-blue-400 flex items-center justify-center text-white hover:bg-blue-500 transition-colors flex-shrink-0">
+                                    <button 
+                                        className="w-18 h-18 rounded-full bg-transparent border-1 border-blue-400 flex items-center justify-center text-white hover:bg-blue-500 transition-colors flex-shrink-0"
+                                        onClick={handlePrediction}
+                                    >
                                         <Image src="/hand_mirror.svg" alt="Logo" width={60} height={60} priority />
                                     </button>
                                     <button
                                         className="w-18 h-18 rounded-full bg-blue-400 border-1 border-blue-400 flex items-center justify-center text-white hover:bg-blue-500 transition-colors flex-shrink-0"
-                                        onClick={async () => {
-                                            try {
-                                                const response = await fetch("http://localhost:8000/handle_single_entry", {
-                                                    method: "POST",
-                                                    headers: { "Content-Type": "application/json" },
-                                                    body: JSON.stringify({
-                                                        creation_date: selectedEntry.createdAt,
-                                                        content: selectedEntry.content,
-                                                        title: selectedEntry.title
-                                                    })
-                                                });
-                                                const data = await response.json();
-                                                if (response.ok) console.log("Data sent successfully:", data);
-                                                else console.error("Failed to send data:", data);
-                                            } catch (error) {
-                                                console.error("Error while sending data:", error);
-                                            }
-                                        }}
+                                        onClick={postJournalEntry}
                                     >
                                         save
                                     </button>

@@ -261,11 +261,9 @@ export default function Journal() {
                                         },
                                         body: JSON.stringify({
                                             creation_date: creation_date,
-                                            action: "post",
-                                            "entry": {
-                                                "content": content,
-                                                "title": title,
-                                            }})
+                                            content: content,
+                                            title: title
+                                            })
                                       });
                                       
                                       const data = await response.json();

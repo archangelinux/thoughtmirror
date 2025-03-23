@@ -80,29 +80,21 @@ def get_single_entry( request: Request,
         raise HTTPException(status_code=400, detail="Invalid action for GET request. Only 'get' is allowed.")
 
 @app.post("/handle_single_entry/")
-def handle_single_entry_post(request: Request,
+async def handle_single_entry_post(request: Request,
     creation_date: str = Body(..., embed=True, description="The creation date of the journal entry."),
-    action: str = Body(..., embed=True, description="Action to perform: 'post', 'update', or 'delete'"),
-    entry: Optional[JournalEntryPayload] = Body(None, embed=True, description="Journal entry data for 'post' or 'update'")
+    content: str = Body(None, embed=True, description="Journal entry name'"),
+    title: str = Body(None, embed=True, description="Journal entry title'"),
 ):
     hasher = Hasher()
-    post_id = hasher.title_to_postid(entry.title, creation_date)
+    post_id = hasher.title_to_postid(title, creation_date)
     user_id = request.session.get("user_id") or "0"
     fda = FirebaseDataAccess("users", uid=user_id)
     action = action.lower()
-    if action == 'post' or action =='update':
-        if entry is None or entry.title is None or entry.content is None:
-            raise HTTPException(status_code=400, detail="Entry data with title and content is required for posting.")
-        # Create a new journal entry and capture the generated post_id
-        returned_post_id = fda.add_journal_entry(entry.model_dump(), post_id)
-        return {"post_id": returned_post_id, "message": "Journal entry created."}
-    elif action == "delete":
-        if post_id is None:
-            raise HTTPException(status_code=400, detail="Post ID is required for deletion.")
-        fda.delete_journal_entry(post_id)
-        return {"message": f"Deleted journal entry {post_id} for user {fda.uid}."}
-    else:
-        raise HTTPException(status_code=400, detail="Invalid action for POST request. Allowed actions: 'post', 'update', 'delete'.")
+    if title is None or content is None:
+        raise HTTPException(status_code=400, detail="Entry data with title and content is required for posting.")
+    # Create a new journal entry and capture the generated post_id
+    returned_post_id = fda.add_journal_entry(title, content, post_id)
+    return {"post_id": returned_post_id, "message": "Journal entry created."}
 
 
 def predict(journal_entry_content: str): 

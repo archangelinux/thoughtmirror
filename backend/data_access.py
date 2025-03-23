@@ -38,18 +38,28 @@ class FirebaseDataAccess:
         if journal_entry is not None:
             self.add_journal_entry(self.uid, journal_entry)
 
-    def add_journal_entry(self, title: str, content: str, post_id: str):
+    def add_journal_entry(self, title: str, content: str, post_id: str, distortion: str|None = None):
         journal_entries = (
             db.collection(self.collection_name).document(self.uid).collection("journalEntries")
         )
-
-        entry_data = {
-            "title": title,
-            "post_content": content,
-            "time_created": firestore.SERVER_TIMESTAMP,
-            "time_last_edited": firestore.SERVER_TIMESTAMP,
-            "distortions": {},
-        }
+        
+        if distortion is not None:
+            dist = [distortion["Dominant Distortion"], distortion["Secondary Distortion (Optional)"]  ]
+            entry_data = {
+                "title": title,
+                "post_content": content,
+                "time_created": firestore.SERVER_TIMESTAMP,
+                "time_last_edited": firestore.SERVER_TIMESTAMP,
+                "distortions": dist,
+            }
+        else:
+                entry_data = {
+                "title": title,
+                "post_content": content,
+                "time_created": firestore.SERVER_TIMESTAMP,
+                "time_last_edited": firestore.SERVER_TIMESTAMP,
+                "distortions": distortion,
+                }
 
         # Add the document to the subcollection, setting the document id from our postID
         doc_ref = journal_entries.document(post_id)

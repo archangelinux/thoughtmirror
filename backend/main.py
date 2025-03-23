@@ -22,7 +22,6 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, GoogleGenerativ
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 
-
 app = FastAPI()
 
 app.add_middleware(SessionMiddleware, secret_key="your-secret-key-here")
@@ -149,6 +148,7 @@ async def handle_prediction(
     ),
     title: str = Body(..., embed=True, description="The title of the journal entry."),
 ):
+
     # save to firebase, exact same as handle single entry
     hasher = Hasher()
     post_id = hasher.title_to_postid(title, creation_date)
@@ -159,10 +159,8 @@ async def handle_prediction(
             status_code=400,
             detail="Entry data with title and content is required for posting.",
         )
-    # Create a new journal entry and capture the generated post_id
-    returned_post_id = fda.add_journal_entry(title, content, post_id)
-
-    # --- Step 2: Get the prediction for cognitive distortions ---
+    
+        # --- Step 2: Get the prediction for cognitive distortions ---
     try:
         prediction_text = predict(content)  # predict() returns a JSON string
         if "none" in prediction_text.lower():
@@ -170,6 +168,9 @@ async def handle_prediction(
         prediction_dict = json.loads(prediction_text)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during prediction: {e}")
+    
+    # Create a new journal entry and capture the generated post_id
+    returned_post_id = fda.add_journal_entry(title, content, post_id, prediction_dict)
 
     # --- Step 3: Generate an explanation using a RAG pipeline ---
     try:

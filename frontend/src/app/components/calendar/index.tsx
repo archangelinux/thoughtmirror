@@ -21,6 +21,7 @@ const Calendar: React.FC = () => {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [distortionsData, setDistortionsData] = useState<any[]>([]);
 
   //local storage
   useEffect(() => {
@@ -35,14 +36,12 @@ const Calendar: React.FC = () => {
   const findEntriesForDate = (date: Date): JournalEntry[] => {
     return entries.filter(entry => {
       const entryDate = parseISO(entry.createdAt);
-      console.log(entryDate, date)
       return (
         entryDate.getUTCMonth() === date.getUTCMonth() &&
         entryDate.getUTCDate() === date.getUTCDate()
       );
     });
   };
-
 
   const getMostRecentEntryForDate = (date: Date): JournalEntry | null => {
     const dateEntries = findEntriesForDate(date);
@@ -55,6 +54,7 @@ const Calendar: React.FC = () => {
 
   const handleDateClick = (info: any) => {
     const clickedDate = info.date;
+    console.log(clickedDate)
     const entry = getMostRecentEntryForDate(clickedDate);
 
     if (entry) {

@@ -198,7 +198,7 @@ def get_calendar_distortions(request: Request):
     for entry in entries:
         response.append({
             "createdAt": entry["time_created"],
-            "distortions": list(entry.get("distortions", []))
+            "distortions": entry.get("distortions", [])
         })
     return response
 

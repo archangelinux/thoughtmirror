@@ -3,7 +3,6 @@ import { Montserrat } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/app/components/navbar";
 import React from "react";
-import { SelectedPage } from "@/utils/types";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",

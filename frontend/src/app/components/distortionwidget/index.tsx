@@ -13,16 +13,16 @@ interface DistortionWidgetProps {
 const DistortionWidget: React.FC<DistortionWidgetProps> = ({ distortionTraits }) => {
     //10 cognitive distortions
   const colorMap: Record<string, string> = {
-    "Personalization": "#bbcfd0",
-    "Labeling": "#d1f7d9",
-    "Fortune-Telling": "#e9def8",
-    "Magnification": "#e8c4dd",
-    "Mind Reading": "#d1cfe3",
-    "All-Or-Nothing Thinking": "#d2bcca",
-    "Overgeneralizationt": "#e8c7ba",
-    "Mental Filter": "#d4c7e5",
-    "Emotional Reasoning": "#e3c2f4",
-    "Should Statements": "#f7d4b9",
+    "Personalization": "#D3CEFF",
+    "Labeling": "#ACC5F4",
+    "Fortune-Telling": "#96E0E4",
+    "Magnification": "#AEC8B2",
+    "Mind Reading": "#C8DC77",
+    "All-Or-Nothing Thinking": "#FDB745",
+    "Overgeneralizationt": "#FFD1A0",
+    "Mental Filter": "#FF8747",
+    "Emotional Reasoning": "#FF6B5B",
+    "Should Statements": "#FF8190",
   };
 
   // Filter out "No Distortion" and limit to 10 traits

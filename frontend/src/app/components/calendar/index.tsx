@@ -29,14 +29,20 @@ const Calendar: React.FC = () => {
       setEntries(JSON.parse(savedEntries));
     }
   }, []);
+  
 
   // Find entries for a specific date
   const findEntriesForDate = (date: Date): JournalEntry[] => {
     return entries.filter(entry => {
       const entryDate = parseISO(entry.createdAt);
-      return isSameDay(entryDate, date);
+      console.log(entryDate, date)
+      return (
+        entryDate.getUTCMonth() === date.getUTCMonth() &&
+        entryDate.getUTCDate() === date.getUTCDate()
+      );
     });
   };
+
 
   const getMostRecentEntryForDate = (date: Date): JournalEntry | null => {
     const dateEntries = findEntriesForDate(date);

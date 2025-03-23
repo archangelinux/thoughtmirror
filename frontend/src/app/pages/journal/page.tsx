@@ -87,6 +87,7 @@ export default function Journal() {
                     content: entry.post_content,
                     createdAt: entry.time_created,
                     updatedAt: entry.time_last_edited,
+                    distortions: entry.distortions
                 }));
                 setJournalEntries(formattedEntries);
                 if (formattedEntries.length > 0) setSelectedEntry(formattedEntries[0]);
@@ -117,7 +118,8 @@ export default function Journal() {
             title,
             content: "",
             createdAt: currentTime,
-            updatedAt: currentTime
+            updatedAt: currentTime,
+            distortions: []
         };
         //reset states
         const updatedEntries = [newEntry, ...journalEntries];

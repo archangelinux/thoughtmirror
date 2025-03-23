@@ -76,3 +76,16 @@
 
 
 
+.fc .fc-daygrid-day-frame {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    height: 100% !important;
+}
+
+.fc .fc-daygrid-day-top {
+    display: flex !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+}

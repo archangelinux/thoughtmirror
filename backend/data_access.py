@@ -118,7 +118,7 @@ class FirebaseDataAccess:
                     "post_content": data.get("post_content"),
                     "time_created": data.get("time_created"),
                     "time_last_edited": data.get("time_last_edited"),
-                    "distortions": {},
+                    "distortions": data.get("distortions"),
                     "word_count": len(data.get("post_content"))
                 }
             )

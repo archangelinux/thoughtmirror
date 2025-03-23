@@ -126,6 +126,8 @@ async def handle_single_entry_post(
 ):
     hasher = Hasher()
     post_id = hasher.title_to_postid(title, creation_date)
+    print(type(creation_date))
+    print(creation_date)
     user_id = request.session.get("user_id") or "0"
     fda = FirebaseDataAccess("users", uid=user_id)
     if title is None or content is None:
@@ -197,7 +199,7 @@ def get_calendar_distortions(request: Request):
     for entry in entries:
         response.append({
             "createdAt": entry["time_created"],
-            "distortions": entry.get("detected_distortions", [])
+            "distortions": list(entry.get("distortions", []))
         })
     return response
 

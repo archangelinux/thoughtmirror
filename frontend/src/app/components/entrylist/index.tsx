@@ -8,6 +8,7 @@ export interface JournalEntry {
   content: string;
   createdAt: string;
   updatedAt: string;
+  distortions: string[];
 }
 
 interface EntryListProps {

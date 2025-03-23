@@ -15,13 +15,36 @@ interface JournalEntry {
   content: string;
   createdAt: string;
   updatedAt: string;
+  distortions: string[];
 }
-
 const Calendar: React.FC = () => {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [distortionsData, setDistortionsData] = useState<any[]>([]);
+
+  // get from backend
+  useEffect(() => {
+    const fetchEntries = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/get_all_entries');
+        const data = await response.json();
+        const formattedEntries: JournalEntry[] = data.map((entry: any) => ({
+          id: entry.post_id,
+          title: entry.title,
+          content: entry.post_content,
+          createdAt: entry.time_created,
+          updatedAt: entry.time_last_edited,
+          distortions: entry.distortions || []
+        }));
+        setEntries(formattedEntries);
+      } catch (err) {
+        console.error('Failed to fetch entries:', err);
+      }
+    };
+  
+    fetchEntries();
+  }, []);
 
   //local storage
   useEffect(() => {
@@ -66,42 +89,35 @@ const Calendar: React.FC = () => {
   //custom rendering of cells
   const renderDayCell = (info: any) => {
     const dayNumber = format(info.date, "d");
-    const numEntries = findEntriesForDate(info.date).length;
+    const entriesForDate = findEntriesForDate(info.date);
+  
+    // Aggregate unique distortions for this date
+    const distortionsSet = new Set<string>();
+    entriesForDate.forEach(entry => {
+      (entry.distortions || []).forEach(distortion => distortionsSet.add(distortion));
+    });
+    const uniqueDistortions = Array.from(distortionsSet);
   
     return (
       <div className="relative h-full w-full flex flex-col">
         <div className="h-3 w-full flex flex-row justify-between items-center">
           <div className="absolute mt-4 right-10 text-[9px] text-gray-700">
-            Entries: {numEntries}
+            Entries: {entriesForDate.length}
           </div>
-          <div className="text-sm mt-1 mr-1 text-gray-700">
-            {dayNumber}
-          </div>
+          <div className="text-sm mt-1 mr-1 text-gray-700">{dayNumber}</div>
         </div>
   
-        <div>
-          {numEntries > 0 && (
-            <div className="absolute top-[-30px] right-2">
-              <DistortionWidget
-                distortionTraits={[
-                  { name: "Personalization", active: true },
-                  { name: "Labeling", active: true },
-                  { name: "Fortune-Telling", active: true },
-                  { name: "Magnification", active: true },
-                  { name: "Mind Reading", active: true },
-                  { name: "All-Or-Nothing", active: true },
-                  { name: "Overgeneralization", active: true },
-                  { name: "Mental Filter", active: true },
-                  { name: "Emotional Reasoning", active: true },
-                  { name: "Should Statements", active: true }
-                ]}
-              />
-            </div>
-          )}
-        </div>
+        {uniqueDistortions.length > 0 && (
+          <div className="absolute top-[-30px] right-2">
+            <DistortionWidget
+              distortionTraits={uniqueDistortions.map(name => ({ name, active: true }))}
+            />
+          </div>
+        )}
       </div>
     );
   };
+
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5">
       <div className="custom-calendar">

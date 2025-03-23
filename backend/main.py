@@ -55,7 +55,7 @@ async def get_user_email_from_frontend(request: Request):
     body = await request.json()
     user_email = body.get("userEmail")
     request.session["user_id"] = hasher.email_to_uid(user_email)
-    print(user_email)
+    print(request.session["user_id"])
     return {"message": f"Got user's email {user_email}", "data": user_email}
 
 

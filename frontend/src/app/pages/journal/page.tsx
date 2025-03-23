@@ -61,7 +61,7 @@ export default function Journal() {
         const afterHighlight = content.substring(highlightRange.end);
       
         return (
-          <div className="text-[13px] flex-grow w-full p-4 border border-gray-200 rounded-lg overflow-auto whitespace-pre-wrap">
+          <div className="text-[13px] flex-grow w-full p-4 border border-gray-200 rounded-lg whitespace-pre-wrap">
             {beforeHighlight}
             <span 
               className="relative group cursor-help"
@@ -69,11 +69,11 @@ export default function Journal() {
               style={{ backgroundColor: highlightColor }}
             >
               {highlightedText}
-              <div className="absolute z-50 invisible group-hover:visible bg-blue-200 text-black p-2 rounded-md text-sm max-w-xs w-max 
-        bottom-auto top-full left-1/2 transform -translate-x-1/2 mt-2">
-                        {explanation}
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-blue-200"></div>
-                    </div>
+              <div className="absolute z-[9999] group-hover:visible invisible bg-blue-200 text-black p-2 rounded-md text-sm max-w-xs w-max 
+                    bottom-auto top-full left-1/2 transform -translate-x-1/2 mt-2 shadow-lg">
+                {explanation}
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-blue-200"></div>
+            </div>
                 </span>
             {afterHighlight}
           </div>
@@ -402,50 +402,54 @@ export default function Journal() {
                                 />
                             </div>
                         ) : (
-                            <div className="flex items-center justify-between mb-2 w-full">
-                                <h1
-                                    className="text-3xl font-bold flex items-center group cursor-pointer overflow-hidden max-w-[90%]"
-                                    onClick={startEditingTitle}
-                                    title={selectedEntry.title}
-                                >
-                                    <div className="truncate max-w-full">{selectedEntry.title}</div>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-5 w-5 ml-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                                        />
-                                    </svg>
-                                </h1>
-                                <div className="flex flex-row gap-5">
-                                    <button 
-                                        className="w-30 h-18 pl-2 rounded-xl bg-transparent border-1 border-blue-400 flex items-center justify-center text-blue-500 text-sm hover:bg-yellow-200 hover:border-transparent transition-colors flex-shrink-0"
+                            <div className="flex flex-row justify-between mb-2">
+                                <div className="flex flex-col">
+                                    <div className="flex items-center justify-between mb-2 w-full">
+                                        <h1
+                                            className="text-3xl font-bold flex items-center group cursor-pointer overflow-hidden max-w-[90%]"
+                                            onClick={startEditingTitle}
+                                            title={selectedEntry.title}>
+                                            <div className="truncate max-w-full">{selectedEntry.title}</div>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-5 w-5 ml-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                                />
+                                            </svg>
+                                        </h1>
+                                    </div>
+                                    <div className="flex flex-col mb-6 text-gray-600">
+                                        <span className="text-sm">Created: {formatDateTime(selectedEntry.createdAt)}</span>
+                                        {selectedEntry.createdAt !== selectedEntry.updatedAt && (
+                                            <span className="text-sm">Last updated: {formatDateTime(selectedEntry.updatedAt)}</span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-2">
+                                    <button
+                                        className="w-35 h-13 px-2 rounded-lg bg-transparent  italic border-1 border-blue-400 flex items-center justify-center text-blue-500 text-sm hover:bg-yellow-200 hover:border-transparent transition-colors flex-shrink-0"
                                         onClick={handlePrediction}
                                     >
-                                        Mirror Mode <Image src="/hand_mirror.svg" alt="Logo" width={60} height={60} priority />
+                                        MIRROR MODE <Image src="/hand_mirror.svg" alt="Logo" width={45} height={45} priority />
                                     </button>
                                     <button
-                                        className="w-18 h-18 rounded-full bg-blue-400 border-1 border-blue-400 flex items-center justify-center text-white hover:bg-blue-500 transition-colors flex-shrink-0"
+                                        className="w-35 h-6 gap-5 rounded-md bg-transparent   border-1 border-blue-400 flex items-center justify-center text-blue-500 text-sm hover:bg-yellow-200 hover:border-transparent transition-colors flex-shrink-0"
                                         onClick={postJournalEntry}
                                     >
-                                        save
+                                        SAVE
                                     </button>
                                 </div>
                             </div>
                         )}
-                        <div className="flex flex-col mb-6 text-gray-600">
-                            <span className="text-sm">Created: {formatDateTime(selectedEntry.createdAt)}</span>
-                            {selectedEntry.createdAt !== selectedEntry.updatedAt && (
-                                <span className="text-sm">Last updated: {formatDateTime(selectedEntry.updatedAt)}</span>
-                            )}
-                        </div>
                         
                         {highlightRange ? (
                             // Show highlighted view when we have a prediction
@@ -486,3 +490,4 @@ export default function Journal() {
         </div>
     );
 }
+

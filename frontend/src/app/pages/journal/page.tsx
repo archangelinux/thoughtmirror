@@ -23,6 +23,8 @@ export default function Journal() {
     const titleInputRef = useRef<HTMLInputElement>(null);
     const [dominantDistortion, setDominantDistortion] = useState<string>("");
     const [showNoDistortionPopup, setShowNoDistortionPopup] = useState(false);
+    const [isLoadingPrediction, setIsLoadingPrediction] = useState(false);
+
 
     const distortionColors: Record<string, string> = {
         "Personalization": "#D3CEFF",
@@ -253,6 +255,7 @@ export default function Journal() {
 
     const handlePrediction = async () => {
         if (!selectedEntry) return;
+        setIsLoadingPrediction(true);
       
         try {
             const response = await fetch("http://127.0.0.1:8000/handle_prediction", {
@@ -308,6 +311,8 @@ export default function Journal() {
             setPrediction("");
             setExplanation("");
             setHighlightRange(null);
+        } finally {
+            setIsLoadingPrediction(false); // End loading
         }
     };
 
@@ -362,6 +367,11 @@ export default function Journal() {
             </div>
 
             <div className="w-3/5 h-7/8 pt-20 mb-20 bg-transparent border-none rounded-2xl flex flex-col">
+                {isLoadingPrediction && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-opacity-70"></div>
+                </div>
+                )}
                 {selectedEntry ? (
                     <>
                         {isEditingTitle ? (

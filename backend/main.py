@@ -200,19 +200,18 @@ def generate_explanation(prediction: dict, qa_chain) -> str:
     full_prompt = explanation_prompt
     
     # Use the RetrievalQA chain to generate an explanation.
-    explanation = qa_chain.run(full_prompt)
+    explanation = qa_chain.invoke(full_prompt)['result']
     return explanation
 
 if __name__ == "__main__":
     # Test the prediction
-    #prompt = "I’m 12 and have been caught lying many times. I want to stop, but I don’t know how. My mom is on the verge of disowning me. I cry everyday, and try to stop but it just comes out. I feel as if I have to lie because I’m scared of the outcome. I have tried communicating this problem with my parents but they refuse to understand. I have attempted suicide, because I am sick of life. Please, please help before I either kill myself, or my mom disowns me."
-    #predict(prompt)
-
+    prompt = "I’m 12 and have been caught lying many times. I want to stop, but I don’t know how. My mom is on the verge of disowning me. I cry everyday, and try to stop but it just comes out. I feel as if I have to lie because I’m scared of the outcome. I have tried communicating this problem with my parents but they refuse to understand. I have attempted suicide, because I am sick of life. Please, please help before I either kill myself, or my mom disowns me."
+    sample_prediction = predict(prompt)
+    sample_prediction_dict = json.loads(sample_prediction)
     # Create QA chain
 
     qa_chain = create_qa_chain()
 
-    sample_prediction = {"Distorted part": "I don’t know if I’m delusional or a genius. I go through these stages where I have these weird thoughts. Like a few days ago, I convinced myself I was bipolar even though I’ve never had a manic episode or anything close, but I thought I had. I also convinced myself I was autistic, had OCD, and was schizophrenic, schizotypal or schizoid. Now I’m convinced I’m delusional. But that could just be a delusion I wouldn’t be delusional.", "Dominant Distortion": "Labeling", "Secondary Distortion (Optional)": "Fortune-telling"}
-
-    explanation_text = generate_explanation(sample_prediction, qa_chain)
+    #sample_prediction = {"Distorted part": "I don’t know if I’m delusional or a genius. I go through these stages where I have these weird thoughts. Like a few days ago, I convinced myself I was bipolar even though I’ve never had a manic episode or anything close, but I thought I had. I also convinced myself I was autistic, had OCD, and was schizophrenic, schizotypal or schizoid. Now I’m convinced I’m delusional. But that could just be a delusion I wouldn’t be delusional.", "Dominant Distortion": "Labeling", "Secondary Distortion (Optional)": "Fortune-telling"}
+    explanation_text = generate_explanation(sample_prediction_dict, qa_chain)
     print(explanation_text)

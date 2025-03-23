@@ -8,6 +8,7 @@ interface HighlightedJournalContentProps {
     content: string;
     highlightRange: { start: number; end: number } | null;
     explanation: string;
+    highlightColor: string;
 }
 
 export default function Journal() {
@@ -20,13 +21,28 @@ export default function Journal() {
     const [explanation, setExplanation] = useState<string>("");
     const [highlightRange, setHighlightRange] = useState<{ start: number, end: number } | null>(null);
     const titleInputRef = useRef<HTMLInputElement>(null);
+    const [dominantDistortion, setDominantDistortion] = useState<string>("");
+
+    const distortionColors: Record<string, string> = {
+        "Personalization": "#D3CEFF",
+        "Labeling": "#ACC5F4",
+        "Fortune-telling": "#96E0E4",
+        "Magnification": "#AEC8B2",
+        "Mind Reading": "#C8DC77",
+        "All-or-nothing thinking": "#FDB745",
+        "Overgeneralization": "#FFD1A0",
+        "Mental filter": "#FF8747",
+        "Emotional Reasoning": "#FF6B5B",
+        "Should statements": "#FF8190"
+      };
 
     //component for highlighted mirror mode
     const HighlightedJournalContent: React.FC<HighlightedJournalContentProps> = ({
         content,
         highlightRange,
-        explanation
-    }) => {
+        explanation,
+        highlightColor
+      }) => {
         if (!content) return null;
         if (!highlightRange) {
             //return content without highlight
@@ -36,15 +52,15 @@ export default function Journal() {
                 </div>
             );
         }
-
+      
         const beforeHighlight = content.substring(0, highlightRange.start);
         const highlightedText = content.substring(highlightRange.start, highlightRange.end);
         const afterHighlight = content.substring(highlightRange.end);
-
+      
         return (
             <div className="text-[13px] flex-grow w-full p-4 border border-gray-200 rounded-lg overflow-auto whitespace-pre-wrap">
                 {beforeHighlight}
-                <span className="bg-yellow-200 relative group cursor-pointer">
+                <span className="bg-yellow-200 relative group cursor-pointer" style={{ backgroundColor: highlightColor }}>
                     {highlightedText}
                     <div className="absolute z-50 invisible group-hover:visible bg-blue-200 text-black p-2 rounded-md text-sm max-w-xs w-max 
         bottom-auto top-full left-1/2 transform -translate-x-1/2 mt-2">
@@ -254,10 +270,13 @@ export default function Journal() {
                     setExplanation("");
                     setHighlightRange(null);
                 } else {
+                    const dominant = data.prediction["Dominant Distortion"];
                     setPrediction(data.prediction);
                     setExplanation(data.explanation || "Potential cognitive distortion detected");
+                    setDominantDistortion(dominant);
                     //find prediction text in entry
-                    const predictionText = data.prediction;
+                    const predictionText = data.prediction["Distorted part"];
+                    console.log(predictionText)
                     const contentText = selectedEntry.content;
                     const startIndex = contentText.indexOf(predictionText);
                     //highlight
@@ -397,6 +416,7 @@ export default function Journal() {
                                     content={selectedEntry.content}
                                     highlightRange={highlightRange}
                                     explanation={explanation}
+                                    highlightColor={distortionColors[dominantDistortion] || '#FFD700'} // fallback color
                                 />
                                 <button
                                     className=" text-lg mt-4 px-4 py-2 border-2 italic border-blue-400 text-blue-400 rounded-lg hover:border-blue-400 transition-colors"

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "thoughtmirror",
   description: "AI-powered reflection",
   icons: {
-    icon: "/logo.svg",
+    icon: "/favicon_thoughtmirror.png",
   },
 };
 

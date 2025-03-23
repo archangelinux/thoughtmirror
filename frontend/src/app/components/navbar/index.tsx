@@ -42,9 +42,9 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-30 py-6 px-6 bg-transparent">
-      <div className="flex justify-between items-center mx-auto w-7/8">
-        <Link href="/">
-          <Image src="/logo.svg" alt="Logo" width={100} height={40} priority />
+      <div className="flex justify-between items-center w-full max-w-[98%] mx-auto">
+        <Link href="/pages/homepage">
+          <Image src="/thoughtmirror_logo.png" alt="Logo" width={140} height={58} priority />
         </Link>
 
         {/* Navigation links (hidden on small screens) */}

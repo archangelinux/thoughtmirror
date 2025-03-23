@@ -63,19 +63,25 @@ const Calendar: React.FC = () => {
     }
   };
 
-  //custome rendering of cells
+  //custom rendering of cells
   const renderDayCell = (info: any) => {
     const dayNumber = format(info.date, "d");
-    const hasEntries = findEntriesForDate(info.date).length > 0;
+    const numEntries = findEntriesForDate(info.date).length;
   
     return (
-      <div className="relative h-full w-full flex flex-col justify-between">
-        {/* Day Number in the top-right */}
-        <div className="absolute top-1 right-2 text-sm text-gray-700">{dayNumber}</div>
+      <div className="relative h-full w-full flex flex-col">
+        <div className="h-3 w-full flex flex-row justify-between items-center">
+          <div className="absolute mt-4 right-10 text-[9px] text-gray-700">
+            Entries: {numEntries}
+          </div>
+          <div className="text-sm mt-1 mr-1 text-gray-700">
+            {dayNumber}
+          </div>
+        </div>
   
-        {/* DistortionWidget positioned at the bottom without affecting layout */}
-        {hasEntries && (
-          <div className="absolute top-[-30px] right-2 ">
+        <div>
+          {numEntries > 0 && (
+            <div className="absolute top-[-30px] right-2">
               <DistortionWidget
                 distortionTraits={[
                   { name: "Personalization", active: true },
@@ -91,11 +97,11 @@ const Calendar: React.FC = () => {
                 ]}
               />
             </div>
-        )}
+          )}
+        </div>
       </div>
     );
   };
-
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5">
       <div className="custom-calendar">

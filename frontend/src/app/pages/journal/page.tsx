@@ -64,8 +64,7 @@ export default function Journal() {
           <div className="text-[13px] flex-grow w-full p-4 border border-gray-200 rounded-lg whitespace-pre-wrap">
             {beforeHighlight}
             <span 
-              className="relative group cursor-help"
-              title={explanation}
+              className="relative group cursor-pointer"
               style={{ backgroundColor: highlightColor }}
             >
               {highlightedText}

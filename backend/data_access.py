@@ -48,7 +48,6 @@ class FirebaseDataAccess:
             "time_created": firestore.SERVER_TIMESTAMP,
             "time_last_edited": firestore.SERVER_TIMESTAMP,
             "distortions": {},
-            "word_count": len(content)
         }
 
         # Add the document to the subcollection, setting the document id from our postID

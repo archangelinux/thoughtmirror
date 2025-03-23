@@ -82,19 +82,18 @@ def get_single_entry( request: Request,
 @app.post("/handle_single_entry/")
 async def handle_single_entry_post(request: Request,
     creation_date: str = Body(..., embed=True, description="The creation date of the journal entry."),
-    content: str = Body(None, embed=True, description="Journal entry name'"),
-    title: str = Body(None, embed=True, description="Journal entry title'"),
+    content: str = Body(..., embed=True, description="Journal entry name'"),
+    title: str = Body(..., embed=True, description="Journal entry title'"),
 ):
     hasher = Hasher()
     post_id = hasher.title_to_postid(title, creation_date)
     user_id = request.session.get("user_id") or "0"
     fda = FirebaseDataAccess("users", uid=user_id)
-    action = action.lower()
     if title is None or content is None:
         raise HTTPException(status_code=400, detail="Entry data with title and content is required for posting.")
     # Create a new journal entry and capture the generated post_id
     returned_post_id = fda.add_journal_entry(title, content, post_id)
-    return {"post_id": returned_post_id, "message": "Journal entry created."}
+    
 
 
 def predict(journal_entry_content: str): 

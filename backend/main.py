@@ -161,7 +161,7 @@ async def handle_prediction(
             status_code=400,
             detail="Entry data with title and content is required for posting.",
         )
-    
+
         # --- Step 2: Get the prediction for cognitive distortions ---
     try:
         prediction_text = predict(content)  # predict() returns a JSON string
@@ -170,7 +170,7 @@ async def handle_prediction(
         prediction_dict = json.loads(prediction_text)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during prediction: {e}")
-    
+
     # Create a new journal entry and capture the generated post_id
     returned_post_id = fda.add_journal_entry(title, content, post_id, prediction_dict)
 
@@ -193,14 +193,16 @@ async def handle_prediction(
 def get_calendar_distortions(request: Request):
     user_id = request.session.get("user_id") or "0"
     fda = FirebaseDataAccess("users", uid=user_id)
-    entries = fda.get_journal_entries() 
+    entries = fda.get_journal_entries()
 
     response = []
     for entry in entries:
-        response.append({
-            "createdAt": entry["time_created"],
-            "distortions": entry.get("distortions", [])
-        })
+        response.append(
+            {
+                "createdAt": entry["time_created"],
+                "distortions": entry.get("distortions", []),
+            }
+        )
     return response
 
 
